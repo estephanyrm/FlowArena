@@ -1,3 +1,3 @@
 # README
 
-## Ruby on Rails 2026 - System Web to management tickets - HTML, CSS, JavaScript, TailwindCSS, Ruby, Rails, PostgreSQL
+## Ruby on Rails 2026 - Web system for ticket management - HTML, CSS, JavaScript, TailwindCSS, Ruby, Rails, PostgreSQL
