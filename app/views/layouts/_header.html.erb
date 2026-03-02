@@ -1,42 +1,43 @@
-<!-- component -->
-<nav
-  class="flex items-center justify-between flex-wrap bg-white py-4 lg:px-12 shadow border-solid border-t-2 border-blue-700">
-  <div class="flex justify-between lg:w-auto w-full lg:border-b-0 pl-6 pr-2 border-solid border-b-2 border-gray-300 pb-5 lg:pb-0">
-  <div class="h-16 w-auto text-purple-600">
-    <%= raw File.read(Rails.root.join("app/assets/images/logo.svg")) %>
-  </div>
-      <div class="block lg:hidden ">
-            
-      </div>
-   </div>
-
-  <div class="flex-1 px-4 hidden lg:flex justify-end">
-  <form class="w-full max-w-lg">
-    <div class="relative">
-      <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-        <svg class="w-4 h-4 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-        </svg>
-      </div>
-
-      <input type="search"
-        id="search"
-        class="block w-full p-3 ps-9 pr-24 bg-neutral-secondary-medium border border-gray-200 text-heading text-sm rounded-xl focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
-        placeholder="Buscar..."
-        required />
-
-      <button type="submit"
-        class="absolute right-2 top-1/2 -translate-y-1/2 text-white bg-brand hover:bg-brand-strong rounded px-3 py-1.5 text-xs">
-        Buscar
-      </button>
+<%# Header - navbar%>
+<header class="shadow px-12 py-4" data-controller="header">
+  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="h-16 w-auto text-purple-600">
+      <%# Logo %>
+      <%= link_to root_path do %>
+        <%= raw File.read(Rails.root.join("app/assets/images/logo.svg")) %>
+      <% end %>
     </div>
-  </form>
-</div>
-  <div class="flex ">
-      <a href="#"
-            class="block text-md px-4 ml-2 py-2 rounded font-semibold text-purple-600 hover:text-white hover:bg-purple-600 transition duration-200">
-            Ingresar / Registrarse
-    </a>
+    <%# Barra de busqueda %>
+    <nav class="flex-1 px-8 hidden lg:flex justify-end">
+    <form class="w-full max-w-lg">
+      <div class="relative">
+        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+          <svg class="w-4 h-4 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+          </svg>
+        </div>
+
+        <input type="search"
+          id="search"
+          class="block w-full p-3 ps-9 pr-24 bg-neutral-secondary-medium border border-gray-700 text-heading text-sm rounded-xl focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+          placeholder="Buscar..."
+          required />
+
+        <button type="submit"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-700 bg-brand hover:bg-brand-strong rounded px-3 py-1.5 text-xs">
+          Buscar
+        </button>
+      </div>
+    </form>
+  </nav>
+    <%# Boton de inicio y registro de sesion %>
+    <div class="hidden md:flex space-x-4">
+      <% if user_signed_in? %>
+        <a href="#" class="text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200">Mis entradas</a>
+        <a href="#" class="text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200">Mi cuenta</a>
+        <%= link_to "Cerrar sesión", destroy_user_session_path, data: { "turbo-method": :delete }, class:"text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200" %>
+      <% else %>
+        <%= link_to "Iniciar  / Registrarse", new_user_registration_path, class:"text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200" %>
+      <% end %>
+    </div>
   </div>
-</div>
-</nav>

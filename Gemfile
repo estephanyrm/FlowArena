@@ -16,7 +16,8 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
 gem "image_processing", "~> 1.2"
-
+gem "tailwindcss-rails", "~> 4.4"
+gem 'devise'
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
@@ -31,4 +32,4 @@ group :development do
 end
 
 
-gem "tailwindcss-rails", "~> 4.4"
+

@@ -24,8 +24,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= render "layouts/header" %>
+  <body class="bg-purple-100">
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
+    <% if controller_name != "registrations" && controller_name != "sessions" %>
+        <%= render "layouts/header" %>
+    <% end %>
     <%= yield %>
     </main>
   </body>
