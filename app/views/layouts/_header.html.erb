@@ -1,43 +1,72 @@
-<%# Header - navbar%>
-<header class="shadow px-12 py-4" data-controller="header">
-  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-    <div class="h-16 w-auto text-purple-600">
+<header class="bg-white border-b-2 border-gray-200" data-controller="header">
+  <div class="mx-auto max-w-7xl px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
+    <div class="relative flex h-20 justify-between">
+      
       <%# Logo %>
-      <%= link_to root_path do %>
-        <%= raw File.read(Rails.root.join("app/assets/images/logo.svg")) %>
-      <% end %>
-    </div>
-    <%# Barra de busqueda %>
-    <nav class="flex-1 px-8 hidden lg:flex justify-end">
-    <form class="w-full max-w-lg">
-      <div class="relative">
-        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-          <svg class="w-4 h-4 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-          </svg>
+      <div class="relative z-10 flex px-2 lg:px-0">
+        <div class="flex flex-shrink-0 items-center">
+          <%= inline_svg("logo.svg", class: "h-14 w-auto text-purple-600") %>
         </div>
-
-        <input type="search"
-          id="search"
-          class="block w-full p-3 ps-9 pr-24 bg-neutral-secondary-medium border border-gray-700 text-heading text-sm rounded-xl focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
-          placeholder="Buscar..."
-          required />
-
-        <button type="submit"
-          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-700 bg-brand hover:bg-brand-strong rounded px-3 py-1.5 text-xs">
-          Buscar
-        </button>
       </div>
-    </form>
-  </nav>
-    <%# Boton de inicio y registro de sesion %>
-    <div class="hidden md:flex space-x-4">
-      <% if user_signed_in? %>
-        <a href="#" class="text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200">Mis entradas</a>
-        <a href="#" class="text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200">Mi cuenta</a>
-        <%= link_to "Cerrar sesión", destroy_user_session_path, data: { "turbo-method": :delete }, class:"text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200" %>
-      <% else %>
-        <%= link_to "Iniciar  / Registrarse", new_user_registration_path, class:"text-black-700 px-4 ml-2 py-2 rounded font-medium hover:text-white hover:bg-purple-600 transition duration-200" %>
-      <% end %>
+
+      <%# Barra de búsqueda %>
+      <div class="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
+        <div class="w-full sm:max-w-xs" data-controller="search" data-action="click->search#toggleSearchModal">
+          <label for="buscar" class="sr-only">Buscar</label>
+          <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input id="search-input" autocomplete="off" name="buscar" class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Buscar..." type="search">
+          </div>
+        </div>
+      </div>
+
+      <%# Menú Móvil %>
+      <div class="relative z-10 flex items-center lg:hidden">
+        <div class="relative flex-shrink-0">
+          <button
+              type="button"
+              data-action="click->header#toggleMobileMenu"
+              class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none">
+            <span class="sr-only">Open menu</span>
+            <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+
+          <%# Dropdown Móvil %>
+          <div
+            data-header-target="mobileMenu" 
+            class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-gray-300 ring-opacity-5 focus:outline-none" 
+            role="menu" aria-orientation="vertical" tabindex="-1">
+            <%= render "layouts/header_menu_items" %>
+          </div>
+        </div>
+      </div>
+
+      <%# Menú Escritorio %>
+      <div class="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
+        <div class="relative ml-4 flex-shrink-0">
+          <button data-action="click->header#toggleDropdown" data-header-target="openUserMenu" type="button" class="relative flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" id="user-menu-button">
+            <span class="sr-only">Open user menu</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 rounded-full text-gray-700">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+          </button>
+          
+          <%# Dropdown Escritorio %>
+          <div
+            data-header-target="dropdown" 
+            class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-gray-300 ring-opacity-5 focus:outline-none" 
+            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+            <%= render "layouts/header_menu_items" %>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+</header>

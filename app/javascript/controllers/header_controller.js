@@ -1,10 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
+import { toggle } from "el-transition"
 
 export default class extends Controller {
-  static targets = ["loginButton"]
-  connect() {
-    this.loginButtonTarget.addEventListener("click", (e) => {
-      console.log("Login button clicked")
-    })   
+
+  static targets = ["dropdown", "mobileMenu"]
+
+  toggleDropdown() {
+    toggle(this.dropdownTarget)
   }
+
+  toggleMobileMenu() {
+    this.mobileMenuTarget.classList.toggle("hidden")
+  }
+
 }
