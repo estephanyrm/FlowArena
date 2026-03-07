@@ -18,16 +18,13 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-purple-100 min-h-screen flex flex-col">
-
+  <body class="bg-purple-100 w-full min-h-screen flex flex-col">
     <%# Renderizado condicional del Header %>
     <% unless ["registrations", "sessions"].include?(controller_name) %>
         <%= render "layouts/header" %>
     <% end %>
-
-    <%# Contenedor Principal Adaptable %>
-    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <%= yield %>
+    <main class="flex-grow flex flex-col">
+        <%= yield %>
     </main>
 
     <%# Pie de página %>
