@@ -1,0 +1,27 @@
+<div id="flash-container" class="fixed top-4 right-4 z-50 pointer-events-none">
+  <%# Solo tomamos el primer mensaje para que no sea aparatoso %>
+  <% type, message = flash.first %>
+  <% if message %>
+    <div x-data="{ show: true }" 
+         x-show="show" 
+         x-init="setTimeout(() => show = false, 4000)"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-x-8"
+         x-transition:enter-end="opacity-100 transform translate-x-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-end="opacity-0 transform translate-x-8"
+         class="pointer-events-auto flex items-center p-3 rounded-lg shadow-lg border-l-4 
+                <%= type == 'notice' ? 'bg-white border-green-500 text-green-800' : 'bg-white border-red-500 text-red-800' %>">
+      
+      <span class="text-sm font-medium mr-4">
+        <%= type == 'notice' ? '' : '⚠️' %> <%= message %>
+      </span>
+      
+      <button @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  <% end %>
+</div>

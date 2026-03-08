@@ -8,3 +8,21 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+
+#perfil-menu-custom a {
+    font-size: 1.125rem; 
+    font-weight: 700;  
+    color: #41015c;   
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5;
+    text-align: center;
+    text-decoration: none;
+}
+
+#perfil-menu-custom a:hover {
+background-color: #e3e1e3;
+border-radius: 10%;
+padding: auto;
+}

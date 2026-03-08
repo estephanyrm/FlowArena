@@ -1,10 +1,14 @@
 <% if user_signed_in? %>
-  <div class="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
-    Hola, <%= current_user.name || current_user.email %>
-  </div>
-  <%= link_to "Ajustes de cuenta", edit_user_registration_path, class:"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem" %>
-  <%= link_to "Cerrar sesión", destroy_user_session_path, data: { "turbo-method": :delete }, class:"block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem" %>
+  <% unless action_name == "miPerfil" %>
+    <div class="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
+      Hola, <%= current_user.name || current_user.email %>
+    </div>
+  <% end %>
+  <%= link_to "Mi perfil", profile_path, class:"block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem" %>
+  <%= link_to "Editar perfil", edit_user_registration_path, class:"block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem" %>
+  <%= link_to "Mis boletos", root_path, class:"block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem" %>
+  <%= link_to "Cerrar sesión", destroy_user_session_path, data: { "turbo-method": :delete }, class:"block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100", role:"menuitem" %>
 <% else %>
-  <%= link_to "Iniciar sesión", new_user_session_path, class:'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100', role:"menuitem" %> 
-  <%= link_to "Registrarme", new_user_registration_path, class:'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100', role:"menuitem" %>
+  <%= link_to "Iniciar sesión", new_user_session_path, class:'block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100', role:"menuitem" %> 
+  <%= link_to "Registrarme", new_user_registration_path, class:'block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100', role:"menuitem" %>
 <% end %>

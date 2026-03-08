@@ -12,6 +12,12 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:account_update, keys: [:name])
   end
 
+  def flash_to_headers
+    return unless request.xhr?
+    response.headers['X-Flash-Messages'] = flash_hash.to_json
+    flash.discard # Evita que el mensaje aparezca en la siguiente carga
+  end
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 

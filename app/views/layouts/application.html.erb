@@ -20,7 +20,7 @@
 
   <body class="bg-purple-100 w-full min-h-screen flex flex-col">
     <%# Renderizado condicional del Header %>
-    <% unless ["registrations", "sessions"].include?(controller_name) %>
+    <% unless ["registrations", "sessions"].include?(controller_name) || action_name == "miPerfil" %>
         <%= render "layouts/header" %>
     <% end %>
     <main class="flex-grow flex flex-col">

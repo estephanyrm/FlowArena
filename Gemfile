@@ -19,6 +19,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 gem "tailwindcss-rails", "~> 4.4"
+gem 'devise-i18n'
 gem 'devise'
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

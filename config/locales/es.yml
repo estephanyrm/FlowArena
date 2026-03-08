@@ -1,0 +1,22 @@
+es:
+  activerecord:
+    attributes:
+      user:
+        name: "Nombre"
+        email: "Correo electrónico"
+        password: "Contraseña"
+        current_password: "Contraseña actual"
+  errors:
+    messages:
+      not_saved:
+        one: "1 error impidió que este %{resource} se guardara:"
+        other: "%{count} errores impidieron que este %{resource} se guardara:"
+  devise:
+    failure:
+      already_authenticated: "Ya has iniciado sesión."
+      unauthenticated: "Tienes que iniciar sesión o registrarte para poder continuar."
+      invalid: "%{authentication_keys} o contraseña inválidos."
+      not_found_in_database: "%{authentication_keys} o contraseña inválidos."
+    registrations:
+      updated: "Tu cuenta se ha actualizado correctamente."
+      destroyed: "¡Adiós! Tu cuenta ha sido cancelada. Esperamos volverte a ver pronto."
