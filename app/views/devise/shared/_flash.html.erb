@@ -1,0 +1,10 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% flash.each do |type, message| %>
+<script>
+  Swal.fire({
+    icon: "<%= type == 'alert' ? 'error' : 'success' %>",
+    text: "<%= message %>"
+  });
+</script>
+<% end %>

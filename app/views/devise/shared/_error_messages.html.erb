@@ -1,21 +1,9 @@
-<% if resource.errors.any? %>
-  <div id="error_explanation" data-turbo-temporary>
-    <h2>
-      <%= I18n.t("errors.messages.not_saved",
-                 count: resource.errors.count,
-                 resource: resource.class.model_name.human)
-       %>
-    </h2>
-
-    <% if resource.errors.any? %>
-      <% flash.now[:alert] = resource.errors.full_messages.join(", ") %>
-    <% end %>
-
-    <%= render "layouts/flash_messages" %>
-    <ul>
-      <% resource.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
+<% if resource && resource.errors.any? %>
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    html: "<%= resource.errors.full_messages.join('<br>') %>"
+  });
+</script>
 <% end %>

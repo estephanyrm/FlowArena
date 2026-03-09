@@ -1,5 +1,4 @@
 <div class="flex min-h-screen flex-col items-center justify-center bg-purple-100 py-12 sm:px-6 lg:px-8">
-  
   <%# Logo %>
   <div class="flex justify-center items-center text-purple-600">
     <a href="<%= root_path %>" class="hover:opacity-80 transition-opacity">
@@ -14,7 +13,7 @@
     </div>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-6" }) do |f| %>
-      
+      <%# Mensajes de error %>
       <%= render "devise/shared/error_messages", resource: resource %>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -70,7 +69,7 @@
       </div>
 
       <div class="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
-        <%= link_to "Cancelar", :back, 
+        <%= link_to "Cancelar", root_path, 
             class: "flex justify-center items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition" %>
         <%= f.submit "Guardar cambios", 
             class: "flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-purple-800 rounded-lg hover:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition shadow-md" %>
