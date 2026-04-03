@@ -1,0 +1,23 @@
+<h1>Reporte de Ventas - Flow Arena</h1>
+<p>Fecha de generación: <%= Time.now.strftime("%d/%m/%Y %H:%M") %></p>
+
+<table border="1" style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th>Orden</th>
+      <th>Comprador</th>
+      <th>Total</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @compras.each do |compra| %>
+      <tr>
+        <td>#<%= compra.numero_orden %></td>
+        <td><%= compra.comprador&.email %></td>
+        <td>$<%= compra.precio_total %></td>
+        <td><%= compra.fecha_compra.strftime("%d/%m/%Y") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

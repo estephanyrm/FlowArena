@@ -1,0 +1,97 @@
+<!-- Formulario para crear/editar eventos -->
+<%= form_with model: [:admin, evento], class: "space-y-5" do |f| %>
+
+  <%# Mensajes de error %>
+  <% if evento.errors.any? %>
+    <div class="p-4 mb-2 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+      <p class="font-bold mb-1">Por favor corrige los siguientes errores:</p>
+      <ul class="list-disc list-inside space-y-0.5">
+        <% evento.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 space-y-4">
+
+    <%# Nombre — obligatorio %>
+    <div>
+      <%= f.label :nombre, class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" do %>
+        Nombre del evento <span class="text-red-500">*</span>
+      <% end %>
+      <%= f.text_field :nombre, placeholder: "Ej: Festival de Rock 2026",
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white #{'border-red-500' if evento.errors[:nombre].any?}" %>
+      <% if evento.errors[:nombre].any? %>
+        <p class="mt-1 text-xs text-red-600"><%= evento.errors[:nombre].first %></p>
+      <% end %>
+    </div>
+
+    <%# Descripción — obligatorio %>
+    <div>
+      <%= f.label :descripcion, class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" do %>
+        Descripción <span class="text-red-500">*</span>
+      <% end %>
+      <%= f.text_area :descripcion, rows: 4, placeholder: "Describe el evento...",
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white #{'border-red-500' if evento.errors[:descripcion].any?}" %>
+      <% if evento.errors[:descripcion].any? %>
+        <p class="mt-1 text-xs text-red-600"><%= evento.errors[:descripcion].first %></p>
+      <% end %>
+    </div>
+
+    <%# Fecha y Hora — ambos obligatorios %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <%= f.label :fecha, class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" do %>
+          Fecha <span class="text-red-500">*</span>
+        <% end %>
+        <%= f.date_field :fecha,
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white #{'border-red-500' if evento.errors[:fecha].any?}" %>
+        <% if evento.errors[:fecha].any? %>
+          <p class="mt-1 text-xs text-red-600"><%= evento.errors[:fecha].first %></p>
+        <% end %>
+      </div>
+      <div>
+        <%= f.label :hora, class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" do %>
+          Hora <span class="text-red-500">*</span>
+        <% end %>
+        <%= f.time_field :hora,
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white #{'border-red-500' if evento.errors[:hora].any?}" %>
+        <% if evento.errors[:hora].any? %>
+          <p class="mt-1 text-xs text-red-600"><%= evento.errors[:hora].first %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Imagen (URL) — obligatorio %>
+    <div>
+      <%= f.label :imagen, class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" do %>
+        URL de imagen <span class="text-red-500">*</span>
+      <% end %>
+      <%= f.url_field :imagen, placeholder: "https://ejemplo.com/imagen.jpg",
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white #{'border-red-500' if evento.errors[:imagen].any?}" %>
+      <% if evento.errors[:imagen].any? %>
+        <p class="mt-1 text-xs text-red-600"><%= evento.errors[:imagen].first %></p>
+      <% end %>
+      <%# Vista previa de la imagen si ya tiene URL %>
+      <% if evento.imagen.present? %>
+        <div class="mt-2">
+          <img src="<%= evento.imagen %>" alt="Vista previa" class="h-32 rounded-lg object-cover border border-gray-200">
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <%# Nota de campos obligatorios %>
+  <p class="text-xs text-gray-500 dark:text-gray-400"><span class="text-red-500">*</span> Todos los campos son obligatorios</p>
+
+  <%# Botones %>
+  <div class="flex gap-3">
+    <%= f.submit evento.new_record? ? "Crear Evento" : "Guardar Cambios",
+        class: "px-6 py-2.5 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 cursor-pointer" %>
+    <%= link_to "Cancelar", admin_eventos_path,
+        class: "px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700" %>
+  </div>
+
+<% end %>

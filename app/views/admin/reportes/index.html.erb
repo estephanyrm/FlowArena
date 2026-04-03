@@ -1,0 +1,105 @@
+<!-- Formulario para generación de reportes (fechas, eventos, etc.) -->
+<div class="p-4">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Reportes y Exportación</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Análisis de ventas</p>
+    </div>
+    <div class="flex gap-3">
+      <%= link_to export_admin_reportes_path(format: :pdf), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700" do %>
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"></path></svg>
+        Exportar PDF
+      <% end %>
+      <%= link_to export_admin_reportes_path(format: :xlsx), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700" do %>
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        Exportar Excel
+      <% end %>
+    </div>
+  </div>
+
+  <%# Filtro por fechas %>
+  <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 mb-6">
+    <%= form_with url: admin_reportes_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Desde</label>
+        <%= f.date_field :fecha_inicio, value: params[:fecha_inicio],
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hasta</label>
+        <%= f.date_field :fecha_fin, value: params[:fecha_fin],
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Evento</label>
+        <%= f.select :evento_id,
+            [['Todos', '']] + (Evento.pluck(:nombre, :id) rescue []),
+            { selected: params[:evento_id] },
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      </div>
+      <%= f.submit "Generar reporte", class: "px-4 py-2.5 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <%# Resumen numérico %>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 text-center">
+      <div class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+        <%= number_to_currency(@total_ingresos || 0, unit: '$', separator: ',', delimiter: '.', precision: 0) %>
+      </div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Total ingresos del período</div>
+    </div>
+    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 text-center">
+      <div class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+        <%= @total_boletos || 0 %>
+      </div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Boletos vendidos</div>
+    </div>
+    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 text-center">
+      <div class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+        <%= @total_compras || 0 %>
+      </div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Transacciones realizadas</div>
+    </div>
+  </div>
+
+  <%# Tabla de ventas por evento %>
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+      <thead class="bg-gray-100 dark:bg-gray-700">
+        <tr>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase">Evento</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase">Boletos vendidos</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase">Ocupación</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase">Ingresos</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+        <% (@reporte_eventos || []).each do |row| %>
+          <% porcentaje = row[:capacidad] > 0 ? (row[:vendidos].to_f / row[:capacidad] * 100).round : 0 %>
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="p-4 font-medium text-gray-900 dark:text-white"><%= row[:nombre] %></td>
+            <td class="p-4 text-gray-500 dark:text-gray-400"><%= row[:vendidos] %> / <%= row[:capacidad] %></td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <div class="w-24 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                  <div class="h-2 rounded-full <%= porcentaje >= 80 ? 'bg-red-500' : porcentaje >= 50 ? 'bg-yellow-400' : 'bg-green-500' %>"
+                       style="width: <%= porcentaje %>%"></div>
+                </div>
+                <span class="text-xs text-gray-500"><%= porcentaje %>%</span>
+              </div>
+            </td>
+            <td class="p-4 font-semibold text-gray-900 dark:text-white">
+              <%= number_to_currency(row[:ingresos] || 0, unit: '$', separator: ',', delimiter: '.', precision: 0) %>
+            </td>
+          </tr>
+        <% end %>
+        <% if (@reporte_eventos || []).empty? %>
+          <tr>
+            <td colspan="4" class="p-8 text-center text-gray-500">Selecciona un rango de fechas para generar el reporte.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

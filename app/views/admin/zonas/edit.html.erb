@@ -1,0 +1,71 @@
+<!-- Formulario para editar una zona existente -->
+<div class="p-4 max-w-xl mx-auto">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Editar Zona</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      Modificando <strong><%= @zona.nombre %></strong> del evento: <strong><%= @evento.nombre %></strong>
+    </p>
+  </div>
+
+  <%= form_with model: [:admin, @evento, @zona], local: true, class: "space-y-5" do |f| %>
+
+    <% if @zona.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 border-l-4 border-red-400 p-4 mb-5">
+      <h2 class="text-red-800 font-bold">
+        <%= pluralize(@zona.errors.count, "error") %> impidieron guardar esta zona:
+      </h2>
+      <ul class="list-disc ml-5 text-red-700">
+        <% @zona.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 space-y-4">
+      <div>
+        <%= f.label :nombre, "Seleccione la Zona", class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= f.select :nombre, 
+            Zona::ZONAS_PERMITIDAS, 
+            { prompt: "Seleccione una zona" }, 
+            { class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5" } 
+        %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :capacidad, "Capacidad Total", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.number_field :capacidad, min: 0, placeholder: "Ej: 2000",
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        </div>
+        <div>
+          <%= f.label :cupos_disponibles, "Cupos disponibles", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.number_field :cupos_disponibles, min: 0,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :precio_cents, "Precio (COP)", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= f.number_field :precio_cents, 
+            value: @zona.precio_cents.present? ? @zona.precio_cents : nil,
+            min: 0, step: 1, placeholder: "Ej: 150000",
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        <p class="text-xs text-gray-400 mt-1">Ingresa el valor en pesos (ej: 150000)</p>
+      </div>
+
+    </div>
+
+    <div class="flex gap-3">
+      <%= f.submit "Guardar Cambios",
+          class: "px-6 py-2.5 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 cursor-pointer" %>
+      <%= link_to "Cancelar", admin_evento_zonas_path(@evento),
+          class: "px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600" %>
+    </div>
+
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to "← Volver a zonas", admin_evento_zonas_path(@evento), class: "text-sm text-purple-600 hover:underline" %>
+  </div>
+</div>

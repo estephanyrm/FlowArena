@@ -1,3 +1,7 @@
+# ============================================
+# Módulos auxiliares para vistas
+# Contienen métodos reutilizables
+# ============================================
 module ApplicationHelper
   def inline_svg(path, options = {})
     file = Rails.root.join("app/assets/images", path)

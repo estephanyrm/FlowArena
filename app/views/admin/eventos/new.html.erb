@@ -1,0 +1,13 @@
+<!-- Formulario para crear un nuevo evento -->
+<div class="p-4 max-w-2xl mx-auto">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Evento</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Completa los datos para crear un evento</p>
+  </div>
+
+  <%= render 'form', evento: @evento %>
+
+  <div class="mt-4">
+    <%= link_to "← Volver a eventos", admin_eventos_path, class: "text-sm text-purple-600 hover:underline" %>
+  </div>
+</div>

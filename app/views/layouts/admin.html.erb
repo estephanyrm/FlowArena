@@ -1,0 +1,32 @@
+<!-- Layout del panel administrativo -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title><%= content_for(:title) || "Administrador - Flow Arena" %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Flow Arena">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <%= favicon_link_tag 'favicon.ico' %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50 dark:bg-gray-900">
+
+    <%= render "admin/navbar" %>
+    <%= render "admin/sidebar" %>
+
+    <main class="p-4 pt-20 lg:ml-64 min-h-screen transition-all duration-75">
+      <div class="max-w-7xl mx-auto">
+        <%= yield %>
+      </div>
+    </main>
+
+  </body>
+</html>

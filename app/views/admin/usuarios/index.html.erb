@@ -1,0 +1,72 @@
+<div class="p-4">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Control de Usuarios</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1"><%= @usuarios.count %> usuarios registrados</p>
+    </div>
+      <%# Botón Nuevo usuario %>
+      <%= link_to new_admin_usuario_path(@usuario), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:ring-purple-300" do %>
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+          Nuevo Usuario
+      <% end %>
+    </div>
+  </div>
+
+  <%# Filtros %>
+  <div class="mb-4">
+    <%= form_with url: admin_usuarios_path, method: :get, class: "flex flex-wrap gap-3" do |f| %>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+        </div>
+        <%= f.text_field :search, value: params[:search], placeholder: "Buscar por email",
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-72 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      </div>
+      <%= f.submit "Buscar", class: "px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-lg hover:bg-gray-800 cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <%# Tabla usuarios %>
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+      <thead class="bg-gray-100 dark:bg-gray-700">
+        <tr>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Usuario</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Fecha de Registro</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+        <% @usuarios.each do |usuario| %>
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-700 dark:text-purple-300 font-bold text-sm">
+                  <%= usuario.name&.first&.upcase || usuario.email.first.upcase %>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900 dark:text-white"><%= usuario.name || "Sin nombre" %></div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400"><%= usuario.email %></div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 text-sm text-gray-500 dark:text-gray-400">
+              <%= usuario.created_at.strftime("%d/%m/%Y") %>
+            </td>
+            <td class="p-4">
+              <div class="flex flex-wrap gap-2">
+                <%= link_to "Editar", edit_admin_usuario_path(usuario), class: "text-white bg-purple-700 hover:bg-purple-800 font-medium rounded-lg text-sm px-3 py-2" %>
+                <%= button_to "Eliminar", admin_usuario_path(usuario), method: :delete, data: { turbo_confirm: "¿Estás seguro?" }, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-8s00" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+        <% if @usuarios.empty? %>
+          <tr>
+            <td colspan="5" class="p-8 text-center text-gray-500">No se encontraron usuarios.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

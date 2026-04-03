@@ -1,0 +1,131 @@
+<!-- Lista de eventos en panel admin -->
+<div class="p-4">
+  <%# Header %>
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestión de Eventos</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1"><%= @eventos.total_count rescue @eventos.count %> eventos en total</p>
+    </div>
+    <%= link_to new_admin_evento_path, class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:ring-purple-300" do %>
+      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+      Nuevo Evento
+    <% end %>
+  </div>
+
+  <%# Filtro búsqueda %>
+  <div class="mb-4">
+    <%= form_with url: admin_eventos_path, method: :get, class: "flex gap-3" do |f| %>
+      <div class="relative flex-1 max-w-sm">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+        </div>
+        <%= f.text_field :search, value: params[:search], placeholder: "Buscar por nombre...",
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      </div>
+      <%= f.submit "Buscar", class: "px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-lg hover:bg-gray-800 cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <%# Tabla de eventos %>
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+      <thead class="bg-gray-100 dark:bg-gray-700">
+        <tr>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Evento</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Fecha</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Zonas</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Ocupación</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Estado</th>
+          <th class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+        <% @eventos.each do |evento| %>
+          <% capacidad_total = evento.zonas.sum(:capacidad) %>
+          <% vendidos = evento.zonas.sum { |z| z.capacidad - z.cupos_disponibles } %>
+          <% porcentaje = capacidad_total > 0 ? (vendidos.to_f / capacidad_total * 100).round : 0 %>
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="p-4">
+              <div class="font-semibold text-gray-900 dark:text-white"><%= evento.nombre %></div>
+              <div class="text-sm text-gray-500 dark:text-gray-400"><%= truncate(evento.descripcion, length: 50) %></div>
+            </td>
+            <td class="p-4 text-sm text-gray-900 dark:text-white whitespace-nowrap">
+              <%= evento.fecha.strftime("%d/%m/%Y") %><br>
+              <span class="text-gray-500 text-xs"><%= evento.hora.strftime("%H:%M") %></span>
+            </td>
+            <td class="p-4 text-sm text-gray-900 dark:text-white">
+              <%= evento.zonas.count %> zona(s)
+            </td>
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <div class="w-24 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                  <div class="h-2 rounded-full <%= porcentaje >= 80 ? 'bg-red-500' : porcentaje >= 50 ? 'bg-yellow-400' : 'bg-green-500' %>"
+                       style="width: <%= porcentaje %>%"></div>
+                </div>
+                <span class="text-xs text-gray-500"><%= porcentaje %>%</span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1"><%= vendidos %>/<%= capacidad_total %> boletos</div>
+            </td>
+            <td class="p-4">
+              <% if evento.estado == 'activo' %>
+                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full dark:bg-green-900 dark:text-green-300">Activo</span>
+              <% else %>
+                <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full dark:bg-red-900 dark:text-red-300">Cerrado</span>
+              <% end %>
+            </td>
+            <td class="p-4">
+              <div class="flex flex-wrap gap-2">
+                <%# Editar %>
+                <%= link_to edit_admin_evento_path(evento), class: "inline-flex items-center px-2 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700" do %>
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                  Editar
+                <% end %>
+
+                <%# Gestionar Zonas %>
+                <%= link_to admin_evento_zonas_path(evento), class: "inline-flex items-center px-2 py-1.5 text-xs font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700" do %>
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path></svg>
+                  Zonas
+                <% end %>
+
+                <%# Cerrar/Abrir venta %>
+                <% if evento.estado == 'activo' %>
+                  <%= button_to admin_evento_path(evento),
+                      method: :patch,
+                      params: { evento: { estado: 'cerrado' } },
+                      data: { turbo_confirm: "¿Cerrar venta de '#{evento.nombre}'? Los usuarios no podrán comprar boletos." },
+                      class: "inline-flex items-center px-2 py-1.5 text-xs font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 cursor-pointer" do %>
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd"></path></svg>
+                    Cerrar venta
+                  <% end %>
+                <% else %>
+                  <%= button_to admin_evento_path(evento),
+                      method: :patch,
+                      params: { evento: { estado: 'activo' } },
+                      class: "inline-flex items-center px-2 py-1.5 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 cursor-pointer" do %>
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                    Abrir venta
+                  <% end %>
+                <% end %>
+
+                <%# Eliminar %>
+                <%= button_to admin_evento_path(evento), method: :delete,
+                    data: { turbo_confirm: "¿Eliminar '#{evento.nombre}'? Esta acción no se puede deshacer." },
+                    class: "inline-flex items-center px-2 py-1.5 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 cursor-pointer" do %>
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+        <% if @eventos.empty? %>
+          <tr>
+            <td colspan="6" class="p-8 text-center text-gray-500 dark:text-gray-400">
+              No se encontraron eventos.
+              <%= link_to "Crear el primero", new_admin_evento_path, class: "text-purple-600 hover:underline ml-1" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

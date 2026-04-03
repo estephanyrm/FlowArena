@@ -1,4 +1,8 @@
+# ============================================
+# Define todas las rutas de la aplicación
+# ============================================
 Rails.application.routes.draw do
+  devise_for :admins, skip: [:registrations]
   devise_for :users
   root "home#index"
 
@@ -10,6 +14,17 @@ Rails.application.routes.draw do
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
+  
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#index'
+    resources :eventos do
+      resources :zonas 
+    end
+    resources :usuarios
+    resources :reportes, only: [:index] do
+      collection { get :export }
+    end
+  end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

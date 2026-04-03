@@ -1,3 +1,7 @@
+# ============================================
+# Controlador base de la aplicación.
+# Contiene lógica común para todos los controladores.
+# ============================================
 class ApplicationController < ActionController::Base
   # Llama al método antes de ejecutar cualquier acción de Devise
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -17,6 +21,16 @@ class ApplicationController < ActionController::Base
     response.headers['X-Flash-Messages'] = flash_hash.to_json
     flash.discard # Evita que el mensaje aparezca en la siguiente carga
   end
+
+  def after_sign_in_path_for(resource)
+    if resource.is_a?(Admin)
+      admin_dashboard_path
+    else
+      root_path
+    end
+  end
+
+  
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern

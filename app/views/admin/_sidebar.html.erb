@@ -1,0 +1,72 @@
+<!-- Menú lateral del panel admin -->
+<aside id="sidebar"
+       class="fixed top-0 left-0 z-20 flex flex-col flex-shrink-0 hidden w-64 h-full pt-16 font-normal duration-75 lg:flex transition-width"
+       data-transition-enter="transition-transform transition-opacity ease-out duration-200"
+       data-transition-enter-from="-translate-x-full opacity-0"
+       data-transition-enter-to="translate-x-0 opacity-100"
+       data-transition-leave="transition-transform transition-opacity ease-in duration-200"
+       data-transition-leave-from="translate-x-0 opacity-100"
+       data-transition-leave-to="-translate-x-full opacity-0"
+       aria-label="Sidebar">
+  <div class="relative flex flex-col flex-1 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex flex-col flex-1 overflow-y-auto">
+      <div class="flex-1 px-3 space-y-1 bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700 py-10">
+        <ul class="pb-2 space-y-2">
+
+          <%# Dashboard %>
+          <li>
+            <%= link_to admin_dashboard_path, class: "flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700 #{request.path == admin_dashboard_path ? 'bg-gray-100 dark:bg-gray-700' : ''}" do %>
+              <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+              </svg>
+              <span class="ml-3">Dashboard</span>
+            <% end %>
+          </li>
+
+          <%# Eventos %>
+          <li>
+            <%= link_to admin_eventos_path, class: "flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700 #{request.path.start_with?('/admin/eventos') ? 'bg-gray-100 dark:bg-gray-700' : ''}" do %>
+              <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+              </svg>
+              <span class="flex-1 ml-3 whitespace-nowrap">Eventos</span>
+            <% end %>
+          </li>
+
+          <%# Usuarios %>
+          <li>
+            <%= link_to admin_usuarios_path, class: "flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700 #{request.path.start_with?('/admin/usuarios') ? 'bg-gray-100 dark:bg-gray-700' : ''}" do %>
+              <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+              </svg>
+              <span class="flex-1 ml-3 whitespace-nowrap">Usuarios</span>
+            <% end %>
+          </li>
+
+          <%# Reportes %>
+          <li>
+            <%= link_to admin_reportes_path, class: "flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700 #{request.path.start_with?('/admin/reportes') ? 'bg-gray-100 dark:bg-gray-700' : ''}" do %>
+              <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/>
+              </svg>
+              <span class="ml-3">Reportes</span>
+            <% end %>
+          </li>
+
+        </ul>
+
+        <%# Cerrar sesión %>
+        <div class="flex-end pt-2 space-y-2">
+          <%= link_to destroy_admin_session_path, data: { turbo_method: :delete }, class: "flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700" do %>
+            <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+            </svg>
+            <span class="ml-3">Cerrar sesión</span>
+          <% end %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,48 @@
+<!-- Formulario reutilizable para creación/edición de usuarios -->
+<%= form_with model: usuario, url: usuario.new_record? ? admin_usuarios_path : admin_usuario_path(usuario),
+             method: usuario.new_record? ? :post : :patch,
+             html: { class: "space-y-6" } do |f| %>
+
+  <% if usuario.errors.any? %>
+    <div class="p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400">
+      <p class="font-bold mb-1"><%= pluralize(usuario.errors.count, "error") %>:</p>
+      <ul class="list-disc list-inside">
+        <% usuario.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, "Nombre", class: "block text-sm font-medium text-gray-900 dark:text-white" %>
+    <%= f.text_field :name, autofocus: true,
+        class: "bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5" %>
+  </div>
+
+  <div>
+    <%= f.label :email, class: "block text-sm font-medium text-gray-900 dark:text-white" %>
+    <%= f.email_field :email, autocomplete: "email",
+        class: "bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5" %>
+  </div>
+
+  <% if usuario.new_record? %>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= f.label :password, "Contraseña", class: "block text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= f.password_field :password, autocomplete: "new-password",
+            class: "bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5" %>
+      </div>
+      <div>
+        <%= f.label :password_confirmation, "Confirmar", class: "block text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            class: "bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5" %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="pt-4">
+    <%= f.submit usuario.new_record? ? "Crear Usuario" : "Guardar Cambios",
+        class: "w-full text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer" %>
+  </div>
+<% end %>

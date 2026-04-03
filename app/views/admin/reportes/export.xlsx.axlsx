@@ -1,0 +1,20 @@
+wb = xlsx_package.workbook
+
+wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
+  # Estilo para el encabezado
+  header = sheet.styles.add_style(bg_color: "4F46E5", fg_color: "FFFFFF", b: true)
+
+  # Títulos de las columnas
+  sheet.add_row ["ID Orden", "Comprador", "Monto", "Fecha", "Estado"], style: header
+
+  # Datos de las compras
+  @compras.each do |compra|
+    sheet.add_row [
+      "##{compra.numero_orden}",
+      compra.comprador&.email || "N/A",
+      compra.precio_total,
+      compra.fecha_compra.strftime("%d/%m/%Y"),
+      compra.pago&.estado ? "Pagado" : "Pendiente"
+    ]
+  end
+end
