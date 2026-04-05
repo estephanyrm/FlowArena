@@ -5,9 +5,13 @@ Rails.application.routes.draw do
   devise_for :admins, skip: [:registrations]
   devise_for :users
   root "home#index"
-
+ 
   # Ruta del perfil
   get 'perfil', to: 'home#miPerfil', as: 'profile'
+
+  # Ruta de la pagina de eventos
+  get 'pagina_eventos', to: 'home#pagina_eventos', as: 'pagina_eventos'
+  resources :eventos, only: [:show]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

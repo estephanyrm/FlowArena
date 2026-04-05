@@ -1,4 +1,5 @@
-<header class="bg-white border-b-2 border-gray-200 relative z-50" data-controller="header">
+<header class="<%= yield(:header_color).presence || 'bg-white text-gray-900' %> shadow-sm sticky top-0 z-50" data-controller="header">
+  
   <div class="mx-auto max-w-7xl px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
     <div class="relative flex h-20 justify-between">
       

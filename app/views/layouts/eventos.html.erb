@@ -1,0 +1,41 @@
+<% content_for :header_color, 'bg-gray-900 text-white' %>
+<% content_for :footer_class, 'bg-gray-900 text-gray-400 border-t border-gray-800' %>
+<section class="bg-gray-900 py-8 antialiased dark:bg-gray-900 md:py-2">
+    <%= image_tag @evento.imagen, 
+              class: "w-full dark:hidden" %>
+    
+    <div class="px-16 inline-flex w-full dark:hidden bg-purple-900 shadow-xs -space-x-px" role="group">
+        <button type="button" class="py-4 px-3 text-gray-400 bg-neutral-primary-soft hover:text-white font-medium text-sm px-3 py-2">
+            <a href="#acerca-de" class="hover:underline">Acerca de</a> 
+        </button>
+        <button type="button" class="py-4 px-3 text-gray-400 bg-neutral-primary-soft hover:text-white font-medium text-sm px-3 py-2">
+            <a href="#precios" class="hover:underline">Precios</a>
+        </button>
+        <button type="button" class="py-4 px-3 text-gray-400 bg-neutral-primary-soft hover:text-white font-medium text-sm px-3 py-2 ">
+           <a href="#experiencia" class="hover:underline">Experiencia</a>
+        </button>
+    </div>
+
+  <div  class="mx-auto max-w-screen-xl px-2 2xl:px-0">
+    <div class="mx-auto max-w-5xl">
+      <div id="acerca-de" class="mx-auto max-w-4xl space-y-6">
+        
+        <p class="py-8 text-base font-normal text-gray-400 dark:text-gray-400">
+            <%= @evento.descripcion%>
+        </p>
+
+        <div class="flex items-center justify-center my-8">
+            <div class="flex-grow border-t border-gray-400"></div>
+
+            <span class="mx-4 text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </span>
+
+            <div class="flex-grow border-t border-gray-400"></div>
+        </div>
+    </div>
+    </div>
+  </div>
+</section>
