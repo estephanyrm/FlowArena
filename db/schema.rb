@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_27_043425) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_06_014525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,6 +108,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_27_043425) do
     t.integer "precio_cents"
     t.datetime "updated_at", null: false
     t.index ["evento_id"], name: "index_zonas_on_evento_id"
+    t.index ["nombre", "evento_id"], name: "index_zonas_on_nombre_and_evento_id", unique: true
   end
 
   add_foreign_key "boletos", "compras"

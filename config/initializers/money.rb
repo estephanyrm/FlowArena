@@ -5,6 +5,7 @@ MoneyRails.configure do |config|
   # To set the default currency
   #
   config.default_currency = :cop
+  Money.default_bank = Money::Bank::VariableExchange.new
 
   # Set default bank object
   #

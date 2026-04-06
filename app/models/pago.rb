@@ -4,5 +4,5 @@
 # ============================================
 class Pago < ApplicationRecord
   belongs_to :compra
-  monetize :monto_cents, with_currency: :cop
+  monetize :precio_cents, disable_validation: true, subunits_per_unit: 1
 end

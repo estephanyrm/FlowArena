@@ -5,7 +5,7 @@
 class Zona < ApplicationRecord
   belongs_to :evento
   has_many :boletos
-  monetize :precio_cents, with_currency: :cop
+  monetize :precio_cents, disable_validation: true, subunits_per_unit: 1
 
   CAPACIDADES = {
     'Diamante' => 2000,
@@ -15,7 +15,8 @@ class Zona < ApplicationRecord
   }
 
   ZONAS_PERMITIDAS = CAPACIDADES.keys
-
+  validates :nombre, uniqueness: { scope: :evento_id, 
+            message: "esta zona ya ha sido registrada para este evento" }
   validates :nombre, presence: { message: "debe seleccionar una zona válida" }
   validates :capacidad, 
           presence: true, 

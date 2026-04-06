@@ -7,5 +7,5 @@ class Compra < ApplicationRecord
   has_many :boletos, dependent: :destroy
   has_one :pago, dependent: :destroy
 
-  monetize :precio_total_cents, with_currency: :cop
+  monetize :precio_cents, disable_validation: true, subunits_per_unit: 1
 end

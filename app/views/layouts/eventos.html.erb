@@ -1,41 +1,155 @@
-<% content_for :header_color, 'bg-gray-900 text-white' %>
-<% content_for :footer_class, 'bg-gray-900 text-gray-400 border-t border-gray-800' %>
-<section class="bg-gray-900 py-8 antialiased dark:bg-gray-900 md:py-2">
+<% content_for :header_color, 'bg-purple-100 text-white' %>
+<% content_for :footer_class, 'bg-purple-100 text-gray-500 border-t border-white/5' %>
+
+<section class="bg-purple-100 antialiased min-h-screen pb-20">
     <%= image_tag @evento.imagen, 
               class: "w-full dark:hidden" %>
     
-    <div class="px-16 inline-flex w-full dark:hidden bg-purple-900 shadow-xs -space-x-px" role="group">
-        <button type="button" class="py-4 px-3 text-gray-400 bg-neutral-primary-soft hover:text-white font-medium text-sm px-3 py-2">
-            <a href="#acerca-de" class="hover:underline">Acerca de</a> 
-        </button>
-        <button type="button" class="py-4 px-3 text-gray-400 bg-neutral-primary-soft hover:text-white font-medium text-sm px-3 py-2">
-            <a href="#precios" class="hover:underline">Precios</a>
-        </button>
-        <button type="button" class="py-4 px-3 text-gray-400 bg-neutral-primary-soft hover:text-white font-medium text-sm px-3 py-2 ">
-           <a href="#experiencia" class="hover:underline">Experiencia</a>
-        </button>
-    </div>
+    <%# Informativo del Evento %>
+    <div class="bg-purple-800 w-full py-8 border-y border-purple-500/20 shadow-[0_0_50px_rgba(124,58,237,0.1)] relative z-10">
+        <div class="max-w-7xl mx-auto px-4 md:px-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-x-4 items-center">
+            
+            <%# LUGAR %>
+            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
+            <svg class="w-7 h-7 text-white mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
+                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Lugar</p>
+                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight">Pereira</p>
+            </div>
+            </div>
 
-  <div  class="mx-auto max-w-screen-xl px-2 2xl:px-0">
-    <div class="mx-auto max-w-5xl">
-      <div id="acerca-de" class="mx-auto max-w-4xl space-y-6">
-        
-        <p class="py-8 text-base font-normal text-gray-400 dark:text-gray-400">
-            <%= @evento.descripcion%>
-        </p>
+            <%# FECHA %>
+            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
+            <svg class="w-7 h-7 text-white mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
+                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Fecha</p>
+                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight"><%= I18n.l(@evento.fecha, format: "%d %b %Y") %></p>
+            </div>
+            </div>
 
-        <div class="flex items-center justify-center my-8">
-            <div class="flex-grow border-t border-gray-400"></div>
+            <%# HORA %>
+            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
+            <svg class="w-7 h-7 text-gray-200 mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
+                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Hora</p>
+                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight"><%= @evento.hora.strftime("%I:%M %p") %></p>
+            </div>
+            </div>
 
-            <span class="mx-4 text-gray-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-            </span>
+            <%# APERTURA %>
+            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
+            <svg class="w-7 h-7 text-gray-200 mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
+                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Apertura</p>
+                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight"><%= (@evento.hora - 2.hours).strftime("%I:%M %p") %></p>
+            </div>
+            </div>
 
-            <div class="flex-grow border-t border-gray-400"></div>
+        </div>
         </div>
     </div>
+
+    <div  class="mx-auto max-w-screen-xl px-2 2xl:px-0">
+        <div class="mx-auto max-w-5xl">
+        <div class="py-8 text-center"></div>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-black tracking-tight mb-6">
+            <%= @evento.nombre %>
+            </h1>
+        <p class="text-lg md:text-xl font-light text-black leading-relaxed italic max-w-5xl mx-auto">
+            <%= @evento.descripcion %>
+        </p>
     </div>
-  </div>
+
+    <%# Separador -|- %>
+    <div class="flex items-center justify-center my-12 mx-auto max-w-5xl px-4">
+        <%# Línea Izquierda %>
+        <div class="flex-grow border-t border-black"></div>
+        <%# Icono Central %>
+        <span class="mx-4 text-black">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+        </span>
+        <%# Línea Derecha %>
+        <div class="flex-grow border-t border-black"></div>
+    </div>
+
+    <%# Precios %>
+    <h2 class="text-5xl md:text-6xl font-extrabold text-black tracking-tight max-w-5xl mx-auto mb-6">
+            Precios y zonas 
+            </h2>
+    <div class="bg-black text-white rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto my-12 border border-gray-800">
+        
+        <%# Encabezado %>
+        <div class="bg-purple-700 p-8 flex justify-between items-center text-gray-100">
+            <div>
+                <h2 class="text-4xl font-black uppercase tracking-tighter"><%= @evento.nombre %></h2>
+            </div>
+            <div class="text-right hidden sm:block">
+                <p class="font-bold"><%= I18n.l(@evento.fecha, format: :long) %></p>
+                <p class="uppercase text-sm">Pereira</p>
+            </div>
+        </div>
+
+    <%# Rejilla de Zonas %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-[#0a0a0a]">
+        
+        <% @evento.zonas.each do |zone| %>
+        <% 
+        gold_diagonal_gradient = 'bg-[linear-gradient(135deg,#5a3b00_0%,#ffd700_35%,#fff3a3_50%,#ffd700_65%,#b8860b_100%)]'
+
+        gold_palette = {
+            diamante:     gold_diagonal_gradient,
+            vip:          gold_diagonal_gradient,
+            preferencial: gold_diagonal_gradient,
+            general:      gold_diagonal_gradient
+        }
+        border_palette = {
+            diamante:     'border-2 border-yellow-300 shadow-[0_0_15px_rgba(255,215,0,0.1)]',
+            vip:          'border-2 border-yellow-300',
+            preferencial: 'border-2 border-yellow-300',
+            general:      'border-2 border-yellow-300'
+        }
+
+        bg_header = gold_palette[zone.nombre.downcase.to_sym] || gold_diagonal_gradient
+        border_color = border_palette[zone.nombre.downcase.to_sym] || 'border-2 border-yellow-300'
+        %>
+
+    <div class="flex flex-col border-2 <%= border_color %> rounded-xl overflow-hidden bg-gray-200 transition-transform hover:scale-105">
+        <%# Header de la Zona %>
+        <div class="bg-gradient-to-r <%= bg_header %> py-3 text-center">
+            <h3 class="text-2xl text-gray-900 font-black uppercase italic"><%= zone.nombre %></h3>
+        </div>
+
+        <%# Cuerpo de la Zona %>
+        <div class="p-6 text-center flex-grow flex flex-col justify-center">
+            <p class="text-sm text-gray-900 uppercase mb-1">Precio actual</p>
+            <p class="text-3xl font-black text-gray-900">
+                <%= humanized_money_with_symbol(zone.precio*100) %>
+            </p>
+            <p class="text-xs text-gray-500 mt-4">
+                Capacidad: <%= zone.capacidad %> personas
+            </p>
+        </div>
+
+    <%# Botón de Selección %>
+    <div class="p-4 bg-gray-100">
+                <button class="w-full py-2 rounded-lg bg-white text-black font-bold hover:bg-purple-700 hover:text-white transition-colors uppercase text-sm">
+                    Seleccionar
+                </button>
+                </div>
+            </div>
+            <% end %>
+
+        </div>
+
+        <%# Nota al pie %>
+        <div class="p-4 text-center border-t border-gray-800 bg-black">
+            <p class="text-xs text-gray-500 italic">* Precios sujetos a cambios según la etapa de venta definida por el administrador.</p>
+        </div>
+        </div>
+</div>
+</div>
+</div>
 </section>
