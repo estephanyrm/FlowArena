@@ -1,155 +1,176 @@
-<% content_for :header_color, 'bg-purple-100 text-white' %>
-<% content_for :footer_class, 'bg-purple-100 text-gray-500 border-t border-white/5' %>
+<% content_for :header_color, 'bg-purple-50 text-white' %>
+<% content_for :footer_class, 'bg-purple-100 text-gray-300 border-t border-white/10' %>
 
-<section class="bg-purple-100 antialiased min-h-screen pb-20">
-    <%= image_tag @evento.imagen, 
-              class: "w-full dark:hidden" %>
-    
-    <%# Informativo del Evento %>
-    <div class="bg-purple-800 w-full py-8 border-y border-purple-500/20 shadow-[0_0_50px_rgba(124,58,237,0.1)] relative z-10">
-        <div class="max-w-7xl mx-auto px-4 md:px-10">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-x-4 items-center">
-            
-            <%# LUGAR %>
-            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
-            <svg class="w-7 h-7 text-white mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
-                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Lugar</p>
-                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight">Pereira</p>
-            </div>
-            </div>
+<section class="bg-purple-100 antialiased min-h-screen pb-20"> 
+    <%# Sección Principal: Imagen y Tarjeta de Compra %>
+    <div class="bg-purple-100 border-b border-purple-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+            <div class="flex flex-col md:flex-row gap-8 items-stretch">
+                <%# Imagen del Evento  - Ajustada para no recortarse %>
+                <div class="w-full md:w-1/2 lg:w-5/12 flex items-center justify-center">
+                    <div class="relative w-full aspect-square overflow-hidden rounded-lg shadow-2xl bg-gray-900 flex items-center justify-center">
+                        <%= image_tag @evento.imagen, class: "max-w-full max-h-full object-contain" %>
+                    </div>
+                </div>
 
-            <%# FECHA %>
-            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
-            <svg class="w-7 h-7 text-white mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
-                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Fecha</p>
-                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight"><%= I18n.l(@evento.fecha, format: "%d %b %Y") %></p>
-            </div>
-            </div>
+                <%# Información de Compra %>
+                <div class="w-full md:w-1/2 lg:w-7/12 flex flex-col justify-center pt-4 md:pt-0">
+                    <h1 class="text-3xl md:text-5xl font-black text-purple-950 leading-tight mb-8 uppercase tracking-tight">
+                        <%= @evento.nombre %>
+                    </h1>
 
-            <%# HORA %>
-            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
-            <svg class="w-7 h-7 text-gray-200 mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
-                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Hora</p>
-                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight"><%= @evento.hora.strftime("%I:%M %p") %></p>
-            </div>
-            </div>
+                    <%# Tarjeta de Fecha y Botón %>
+                    <div class="bg-white border border-purple-50 shadow-sm rounded-xl p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-6">
+                            <%# Fecha estilo calendario %>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-5xl md:text-6xl font-black text-purple-700"><%= @evento.fecha.strftime("%d") %></span>
+                                <div class="flex flex-col leading-none">
+                                    <span class="text-sm md:text-base font-bold text-purple-700 uppercase"><%= I18n.l(@evento.fecha, format: "%b / %Y").upcase %></span>
+                                    <span class="text-[11px] md:text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        <%= I18n.l(@evento.fecha, format: "%a").upcase %> / <%= @evento.hora.strftime("%I:%M %p") %>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <%# Ubicación %>
+                            <div class="border-l border-purple-100 pl-6 py-1">
+                                <p class="text-base md:text-lg font-bold text-purple-900">Pereira</p>
+                                <p class="text-sm text-gray-500">Estadio Flow Arena</p>
+                            </div>
+                        </div>
 
-            <%# APERTURA %>
-            <div class="flex flex-col md:flex-row items-center md:justify-center space-x-0 md:space-x-3 text-center md:text-left">
-            <svg class="w-7 h-7 text-gray-200 mb-1 md:mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-            <div class="transition-all duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl">
-                <p class="text-xs font-black uppercase text-gray-100 opacity-70">Apertura</p>
-                <p class="text-sm font-black uppercase text-gray-200 italic tracking-tight"><%= (@evento.hora - 2.hours).strftime("%I:%M %p") %></p>
-            </div>
-            </div>
-
-        </div>
-        </div>
-    </div>
-
-    <div  class="mx-auto max-w-screen-xl px-2 2xl:px-0">
-        <div class="mx-auto max-w-5xl">
-        <div class="py-8 text-center"></div>
-            <h1 class="text-5xl md:text-6xl font-extrabold text-black tracking-tight mb-6">
-            <%= @evento.nombre %>
-            </h1>
-        <p class="text-lg md:text-xl font-light text-black leading-relaxed italic max-w-5xl mx-auto">
-            <%= @evento.descripcion %>
-        </p>
-    </div>
-
-    <%# Separador -|- %>
-    <div class="flex items-center justify-center my-12 mx-auto max-w-5xl px-4">
-        <%# Línea Izquierda %>
-        <div class="flex-grow border-t border-black"></div>
-        <%# Icono Central %>
-        <span class="mx-4 text-black">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-        </span>
-        <%# Línea Derecha %>
-        <div class="flex-grow border-t border-black"></div>
-    </div>
-
-    <%# Precios %>
-    <h2 class="text-5xl md:text-6xl font-extrabold text-black tracking-tight max-w-5xl mx-auto mb-6">
-            Precios y zonas 
-            </h2>
-    <div class="bg-black text-white rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto my-12 border border-gray-800">
-        
-        <%# Encabezado %>
-        <div class="bg-purple-700 p-8 flex justify-between items-center text-gray-100">
-            <div>
-                <h2 class="text-4xl font-black uppercase tracking-tighter"><%= @evento.nombre %></h2>
-            </div>
-            <div class="text-right hidden sm:block">
-                <p class="font-bold"><%= I18n.l(@evento.fecha, format: :long) %></p>
-                <p class="uppercase text-sm">Pereira</p>
-            </div>
-        </div>
-
-    <%# Rejilla de Zonas %>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-[#0a0a0a]">
-        
-        <% @evento.zonas.each do |zone| %>
-        <% 
-        gold_diagonal_gradient = 'bg-[linear-gradient(135deg,#5a3b00_0%,#ffd700_35%,#fff3a3_50%,#ffd700_65%,#b8860b_100%)]'
-
-        gold_palette = {
-            diamante:     gold_diagonal_gradient,
-            vip:          gold_diagonal_gradient,
-            preferencial: gold_diagonal_gradient,
-            general:      gold_diagonal_gradient
-        }
-        border_palette = {
-            diamante:     'border-2 border-yellow-300 shadow-[0_0_15px_rgba(255,215,0,0.1)]',
-            vip:          'border-2 border-yellow-300',
-            preferencial: 'border-2 border-yellow-300',
-            general:      'border-2 border-yellow-300'
-        }
-
-        bg_header = gold_palette[zone.nombre.downcase.to_sym] || gold_diagonal_gradient
-        border_color = border_palette[zone.nombre.downcase.to_sym] || 'border-2 border-yellow-300'
-        %>
-
-    <div class="flex flex-col border-2 <%= border_color %> rounded-xl overflow-hidden bg-gray-200 transition-transform hover:scale-105">
-        <%# Header de la Zona %>
-        <div class="bg-gradient-to-r <%= bg_header %> py-3 text-center">
-            <h3 class="text-2xl text-gray-900 font-black uppercase italic"><%= zone.nombre %></h3>
-        </div>
-
-        <%# Cuerpo de la Zona %>
-        <div class="p-6 text-center flex-grow flex flex-col justify-center">
-            <p class="text-sm text-gray-900 uppercase mb-1">Precio actual</p>
-            <p class="text-3xl font-black text-gray-900">
-                <%= humanized_money_with_symbol(zone.precio*100) %>
-            </p>
-            <p class="text-xs text-gray-500 mt-4">
-                Capacidad: <%= zone.capacidad %> personas
-            </p>
-        </div>
-
-    <%# Botón de Selección %>
-    <div class="p-4 bg-gray-100">
-                <button class="w-full py-2 rounded-lg bg-white text-black font-bold hover:bg-purple-700 hover:text-white transition-colors uppercase text-sm">
-                    Seleccionar
-                </button>
+                        <%# Botón Comprar %>
+                        <div class="w-full lg:w-auto">
+                            <button class="w-full lg:w-64 bg-purple-700 hover:bg-purple-800 text-white font-bold py-4 px-8 rounded-lg flex items-center justify-between transition-all shadow-lg hover:shadow-purple-200 active:scale-95">
+                                <span class="uppercase tracking-widest text-sm">Comprar</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <% end %>
+        </div>
+    </div>
 
+    <%# Barra de Detalles %>
+    <div class="bg-purple-200 border-b border-purple-200 py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <%# Lugar %>
+                <div class="flex items-start gap-3 group">
+                    <div class="mt-1 bg-white p-2 rounded-lg shadow-sm">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-purple-900 opacity-60">Lugar:</p>
+                        <p class="text-sm font-bold text-purple-950">Pereira</p>
+                    </div>
+                </div>
+
+                <%# Fecha %>
+                <div class="flex items-start gap-3 group">
+                    <div class="mt-1 bg-white p-2 rounded-lg shadow-sm">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-purple-900 opacity-60">Fecha:</p>
+                        <p class="text-sm font-bold text-purple-950"><%= I18n.l(@evento.fecha, format: "%d de %B") %></p>
+                    </div>
+                </div>
+
+                <%# Hora %>
+                <div class="flex items-start gap-3 group">
+                    <div class="mt-1 bg-white p-2 rounded-lg shadow-sm">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-purple-900 opacity-60">Hora:</p>
+                        <p class="text-sm font-bold text-purple-950"><%= @evento.hora.strftime("%I:%M %p") %></p>
+                    </div>
+                </div>
+
+                <%# Apertura %>
+                <div class="flex items-start gap-3 group">
+                    <div class="mt-1 bg-white p-2 rounded-lg shadow-sm">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-purple-900 opacity-60">Apertura:</p>
+                        <p class="text-sm font-bold text-purple-950"><%= (@evento.hora - 3.hours).strftime("%I:%M %p") %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mx-auto max-w-screen-xl px-4 md:px-6">
+        <div class="mx-auto max-w-5xl py-12 text-left">
+            <h2 class="text-3xl md:text-5xl font-black text-purple-950 tracking-tight max-w-5xl mx-auto mb-10 text-center md:text-left">
+                Descripción del evento
+            </h2>
+            <p class="text-base md:text-xl font-light text-black leading-relaxed italic max-w-4xl mx-auto">
+                <%= @evento.descripcion %>
+            </p>
         </div>
 
-        <%# Nota al pie %>
-        <div class="p-4 text-center border-t border-gray-800 bg-black">
-            <p class="text-xs text-gray-500 italic">* Precios sujetos a cambios según la etapa de venta definida por el administrador.</p>
+        <div class="flex items-center justify-center my-8 md:my-12 mx-auto max-w-5xl">
+            <div class="flex-grow border-t border-black"></div>
+            <span class="mx-4 text-black">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </span>
+            <div class="flex-grow border-t border-black"></div>
         </div>
+    <%# Precios y zonas %>
+    <div class="mx-auto max-w-screen-xl px-4 md:px-6 mt-16">
+        <h2 class="text-3xl md:text-5xl font-black text-purple-950 tracking-tight max-w-5xl mx-auto mb-10 text-center md:text-left">
+            Precios y zonas 
+        </h2>
+
+        <div class="bg-gray-900 text-white rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto mb-12 border border-purple-900/30">
+            <div class="bg-purple-800 p-8 md:p-10 flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-6">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white"><%= @evento.nombre %></h2>
+                </div>
+                <div class="sm:text-right">
+                    <p class="font-bold text-lg text-purple-100"><%= I18n.l(@evento.fecha, format: :long) %></p>
+                    <p class="uppercase text-sm font-medium text-purple-300 tracking-widest">Pereira</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 md:p-8 bg-gray-900">
+                <% @evento.zonas.each do |zone| %>
+                    <% 
+                        gold_diagonal_gradient = 'bg-[linear-gradient(135deg,#5a3b00_0%,#ffd700_35%,#fff3a3_50%,#ffd700_65%,#b8860b_100%)]'
+                        gold_palette = { diamante: gold_diagonal_gradient, vip: gold_diagonal_gradient, preferencial: gold_diagonal_gradient, general: gold_diagonal_gradient }
+                        border_palette = { diamante: 'border-2 border-yellow-300 shadow-[0_0_20px_rgba(255,215,0,0.15)]', vip: 'border-2 border-yellow-300', preferencial: 'border-2 border-yellow-300', general: 'border-2 border-yellow-300' }
+                        bg_header = gold_palette[zone.nombre.downcase.to_sym] || gold_diagonal_gradient
+                        border_color = border_palette[zone.nombre.downcase.to_sym] || 'border-2 border-yellow-300'
+                    %>
+
+                    <div class="flex flex-col border-2 <%= border_color %> rounded-2xl overflow-hidden bg-gray-100 transition-all hover:scale-[1.03] hover:shadow-xl">
+                        <div class="bg-gradient-to-r <%= bg_header %> py-4 text-center">
+                            <h3 class="text-2xl text-gray-950 font-black uppercase italic tracking-tighter"><%= zone.nombre %></h3>
+                        </div>
+
+                        <div class="p-8 text-center flex-grow flex flex-col justify-center">
+                            <p class="text-xs text-gray-600 uppercase font-bold mb-2 tracking-widest">Precio actual</p>
+                            <p class="text-3xl font-black text-gray-900">
+                                <%= humanized_money_with_symbol(zone.precio*100) %>
+                            </p>
+                            <p class="text-xs text-gray-500 mt-6 font-medium">
+                                Capacidad: <%= zone.capacidad %> personas
+                            </p>
+                        </div>
+                    </div>
+                <% end %>
+            </div>
+
+            <div class="p-6 text-center border-t border-purple-900/50 bg-gray-900">
+                <p class="text-xs text-purple-300/60 italic font-medium">* Precios sujetos a cambios según la etapa de venta definida por el administrador.</p>
+            </div>
         </div>
-</div>
-</div>
-</div>
+    </div>
+    </div>
 </section>
