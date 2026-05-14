@@ -10,15 +10,15 @@ class ApplicationController < ActionController::Base
 
   def configure_permitted_parameters
     # Permite el campo :name para el registro (sign_up)
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
-    
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name ])
+
     # También permite :name si el usuario decide editar su perfil más adelante
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :name ])
   end
 
   def flash_to_headers
     return unless request.xhr?
-    response.headers['X-Flash-Messages'] = flash_hash.to_json
+    response.headers["X-Flash-Messages"] = flash_hash.to_json
     flash.discard # Evita que el mensaje aparezca en la siguiente carga
   end
 
@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  
+
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern

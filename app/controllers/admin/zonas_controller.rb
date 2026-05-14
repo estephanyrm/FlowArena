@@ -4,7 +4,7 @@
 # ============================================
 class Admin::ZonasController < Admin::BaseController
   before_action :set_evento
-  before_action :set_zona, only: [:edit, :update, :destroy]
+  before_action :set_zona, only: [ :edit, :update, :destroy ]
 
   # Lista todas las zonas del evento
   def index
@@ -24,7 +24,7 @@ class Admin::ZonasController < Admin::BaseController
   def create
     @zona = @evento.zonas.build(zona_params)
     if @zona.save
-      redirect_to admin_evento_zonas_path(@evento), notice: 'Zona creada exitosamente.'
+      redirect_to admin_evento_zonas_path(@evento), notice: "Zona creada exitosamente."
     else
       render :new, status: :unprocessable_entity
     end
@@ -57,7 +57,7 @@ class Admin::ZonasController < Admin::BaseController
 
  def zona_params
   p = params.require(:zona).permit(:nombre, :capacidad, :cupos_disponibles, :precio_cents)
-  p[:precio_cents] = (p[:precio_cents].to_f ).to_i if p[:precio_cents].present?
+  p[:precio_cents] = (p[:precio_cents].to_f).to_i if p[:precio_cents].present?
   p
 end
 end

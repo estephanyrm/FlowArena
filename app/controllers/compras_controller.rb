@@ -1,5 +1,5 @@
 class ComprasController < ApplicationController
-  before_action :set_evento, only: [:new, :create]
+  before_action :set_evento, only: [ :new, :create ]
 
   def new
     @zonas = @evento.zonas.map do |zona|

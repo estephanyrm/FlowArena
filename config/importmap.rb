@@ -10,4 +10,3 @@ pin "flowbite", to: "https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowb
 pin "@popperjs/core", to: "@popperjs--core.js" # @2.11.8
 pin "flowbite-datepicker" # @2.0.0
 pin "sweetalert2" # @11.26.20
-

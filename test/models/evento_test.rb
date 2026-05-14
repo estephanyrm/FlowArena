@@ -1,7 +1,6 @@
 require "test_helper"
 
 class EventoTest < ActiveSupport::TestCase
-
   test "no debería guardar un evento sin nombre" do
     evento = Evento.new(descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
     assert_not evento.save, "Guardó el evento sin nombre"

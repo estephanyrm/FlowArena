@@ -5,23 +5,23 @@ source "https://rubygems.org"
 
 gem "bootsnap", require: false
 # Para generar archivos Excel (.xlsx)
-gem 'caxlsx'
-gem 'caxlsx_rails'
+gem "caxlsx"
+gem "caxlsx_rails"
 
-gem 'devise-i18n'
-gem 'devise'
+gem "devise-i18n"
+gem "devise"
 gem "faker"
 gem "image_processing", "~> 1.2"
 gem "importmap-rails"
 gem "inline_svg"
 gem "jbuilder"
 gem "kamal", require: false
-gem 'money-rails'
+gem "money-rails"
 gem "propshaft"
 gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 gem "rails", "~> 8.1.2"
-gem 'rails-i18n'
+gem "rails-i18n"
 gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
@@ -31,8 +31,8 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "thruster", require: false
 gem "tailwindcss-rails", "~> 4.4"
 # Para generar archivos PDF
-gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary' # Binario necesario para la conversión
+gem "wicked_pdf"
+gem "wkhtmltopdf-binary" # Binario necesario para la conversión
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -46,6 +46,3 @@ end
 group :development do
   gem "web-console"
 end
-
-
-

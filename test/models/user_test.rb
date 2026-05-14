@@ -1,7 +1,6 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-
   test "no debería guardar un usuario sin correo" do
     user = User.new(password: "password123", name: "Test User")
     assert_not user.save, "Guardó el usuario sin correo"

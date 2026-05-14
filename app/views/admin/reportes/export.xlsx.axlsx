@@ -16,7 +16,7 @@ wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
 
   # Encabezados
   sheet.add_row(
-    ["# Orden", "Comprador", "Evento", "Zona", "Boletos", "Total (COP)", "Fecha compra", "Estado"],
+    [ "# Orden", "Comprador", "Evento", "Zona", "Boletos", "Total (COP)", "Fecha compra", "Estado" ],
     style: header_style
   )
 
@@ -27,21 +27,21 @@ wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
     evento_r = zona_r&.evento
 
     # Usar user o email — ya NO usamos .comprador
-    comprador_email = compra.user&.email || compra.email || '(invitado)'
-    es_pagado = compra.pago&.estado == true || compra.estado == 'completado'
+    comprador_email = compra.user&.email || compra.email || "(invitado)"
+    es_pagado = compra.pago&.estado == true || compra.estado == "completado"
     monto_real = compra.precio_total.to_i
 
     sheet.add_row([
       compra.numero_orden,
       comprador_email,
-      evento_r&.nombre || '—',
-      zona_r&.nombre   || '—',
+      evento_r&.nombre || "—",
+      zona_r&.nombre   || "—",
       compra.cantidad,
       monto_real,
       compra.created_at.strftime("%d/%m/%Y %H:%M"),
       es_pagado ? "Pagado" : "Pendiente"
-    ], types: [:string, :string, :string, :string, :integer, :float, :string, :string],
-       style: [nil, nil, nil, nil, center_style, money_style, center_style, center_style])
+    ], types: [ :string, :string, :string, :string, :integer, :float, :string, :string ],
+       style: [ nil, nil, nil, nil, center_style, money_style, center_style, center_style ])
   end
 
   # Totales
@@ -52,7 +52,7 @@ wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
 
     sheet.add_row([])
     sheet.add_row(
-      ["TOTALES", "", "", "", total_boletos, total_monto, "", ""],
+      [ "TOTALES", "", "", "", total_boletos, total_monto, "", "" ],
       style: sheet.styles.add_style(b: true, bg_color: "F3F4F6")
     )
   end

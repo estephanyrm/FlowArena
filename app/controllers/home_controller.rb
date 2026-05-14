@@ -6,10 +6,10 @@
 class HomeController < ApplicationController
   def index
     @carousel_events = Evento.order(created_at: :desc).limit(5)
-    @events = Evento.where(estado: 'activo').order(fecha: :asc)
+    @events = Evento.where(estado: "activo").order(fecha: :asc)
     if params[:buscar].present?
         @events = @events.search_by_name(params[:buscar])
-      end
+    end
   end
 
   def pagina_eventos
@@ -21,11 +21,11 @@ class HomeController < ApplicationController
     if @evento.nil?
       redirect_to root_path, alert: "Evento no encontrado"
     else
-      render 'layouts/eventos'
+      render "layouts/eventos"
     end
   end
 
   def miPerfil
-    render 'layouts/perfil'
+    render "layouts/perfil"
   end
 end

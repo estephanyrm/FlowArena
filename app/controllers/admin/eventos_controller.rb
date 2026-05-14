@@ -20,9 +20,9 @@ class Admin::EventosController < Admin::BaseController
   # Crea un nuevo evento con validacion y manejo de errores
   def create
     @evento = Evento.new(evento_params)
-    @evento.estado ||= 'activo'
+    @evento.estado ||= "activo"
     if @evento.save
-      redirect_to admin_eventos_path, notice: 'Evento creado correctamente.'
+      redirect_to admin_eventos_path, notice: "Evento creado correctamente."
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class Admin::EventosController < Admin::BaseController
   # Actualiza un evento con validacion y manejo de errores
   def update
     if @evento.update(evento_params)
-      redirect_to admin_eventos_path, notice: 'Evento actualizado correctamente.'
+      redirect_to admin_eventos_path, notice: "Evento actualizado correctamente."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -44,7 +44,7 @@ class Admin::EventosController < Admin::BaseController
   # Elimina un evento y redirige con mensaje de confirmacion
   def destroy
     @evento.destroy
-    redirect_to admin_eventos_path, alert: 'Evento eliminado.'
+    redirect_to admin_eventos_path, alert: "Evento eliminado."
   end
 
   private
@@ -58,5 +58,4 @@ class Admin::EventosController < Admin::BaseController
   def evento_params
     params.require(:evento).permit(:nombre, :descripcion, :fecha, :hora, :imagen, :estado)
   end
-
 end
