@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_06_014525) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_184746) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,10 +27,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_014525) do
   end
 
   create_table "boletos", force: :cascade do |t|
-    t.string "codigo_qr"
     t.bigint "compra_id", null: false
     t.datetime "created_at", null: false
+    t.string "estado", default: "pendiente"
     t.datetime "fecha_generacion"
+    t.string "token_qr"
     t.datetime "updated_at", null: false
     t.boolean "usado"
     t.bigint "zona_id", null: false
@@ -41,11 +42,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_014525) do
   create_table "compras", force: :cascade do |t|
     t.integer "cantidad"
     t.datetime "created_at", null: false
+    t.string "email"
+    t.string "estado", default: "pendiente"
     t.datetime "fecha_compra"
     t.string "numero_orden"
     t.decimal "precio_total"
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.index ["user_id"], name: "index_compras_on_user_id"
   end
 
@@ -84,6 +87,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_014525) do
     t.datetime "fecha_generacion"
     t.string "tipo"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "solid_queue_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.index ["job_id"], name: "index_solid_queue_executions_on_job_id"
+  end
+
+  create_table "solid_queue_jobs", force: :cascade do |t|
+    t.text "arguments"
+    t.string "class_name"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "priority", default: 0
+    t.string "queue_name"
+    t.datetime "scheduled_at"
+  end
+
+  create_table "solid_queue_processes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "kind"
+    t.jsonb "metadata"
+    t.string "name"
   end
 
   create_table "users", force: :cascade do |t|

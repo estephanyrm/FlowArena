@@ -1,1 +1,27 @@
-{}
+{
+  "name": "flowarena",
+  "description": "## Ruby on Rails 2026 - Web system for ticket management - HTML, CSS, JavaScript, TailwindCSS, Ruby, Rails, PostgreSQL",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estephanyrm/FlowArena.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/estephanyrm/FlowArena/issues"
+  },
+  "homepage": "https://github.com/estephanyrm/FlowArena#readme"
+}

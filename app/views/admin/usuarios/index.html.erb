@@ -19,10 +19,13 @@
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
         </div>
-        <%= f.text_field :search, value: params[:search], placeholder: "Buscar por email",
+        <%= f.text_field :search, value: params[:search], placeholder: "Buscar por nombre o email...",
             class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-72 pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
       </div>
-      <%= f.submit "Buscar", class: "px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-lg hover:bg-gray-800 cursor-pointer" %>
+      <%= f.submit "Buscar", class: "px-4 py-2 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 cursor-pointer" %>
+      <% if params[:search].present? %>
+        <%= link_to "Limpiar", admin_usuarios_path, class: "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50" %>
+      <% end %>
     <% end %>
   </div>
 
@@ -63,7 +66,15 @@
         <% end %>
         <% if @usuarios.empty? %>
           <tr>
-            <td colspan="5" class="p-8 text-center text-gray-500">No se encontraron usuarios.</td>
+            <td colspan="3" class="p-12 text-center">
+              <div class="flex flex-col items-center justify-center">
+                <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <p class="text-lg font-medium text-gray-900 dark:text-white">No se encontraron usuarios</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Intenta con otros términos de búsqueda.</p>
+              </div>
+            </td>
           </tr>
         <% end %>
       </tbody>

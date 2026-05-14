@@ -7,11 +7,15 @@ class HomeController < ApplicationController
   def index
     @carousel_events = Evento.order(created_at: :desc).limit(5)
     @events = Evento.where(estado: 'activo').order(fecha: :asc)
+    if params[:buscar].present?
+        @events = @events.search_by_name(params[:buscar])
+      end
   end
 
   def pagina_eventos
     # Buscamos el evento por el ID que viene en el link
-    @evento = Evento.find_by(id: params[:id])
+    @evento = Evento.includes(:zonas).find_by(id: params[:id])
+    @zona = @evento.zonas.first
 
     # Si el ID no existe, mandamos al usuario a la home
     if @evento.nil?

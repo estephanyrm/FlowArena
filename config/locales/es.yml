@@ -1,4 +1,8 @@
 es:
+  time:
+    formats:
+      month_year: "%B de %Y"
+      
   activerecord:
     attributes:
       user:

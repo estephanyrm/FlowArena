@@ -47,7 +47,7 @@
       <div>
         <%= f.label :precio_cents, "Precio (COP)", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>
         <%= f.number_field :precio_cents, 
-            value: @zona.precio_cents.present? ? @zona.precio_cents / 100 : nil,
+            value: @zona.precio_cents.present? ? @zona.precio_cents : nil,
             min: 0, step: 1, placeholder: "Ej: 150000",
             class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
         <p class="text-xs text-gray-400 mt-1">Ingresa el valor en pesos (ej: 150000)</p>

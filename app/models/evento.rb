@@ -14,7 +14,11 @@ class Evento < ApplicationRecord
  
   # La fecha no puede ser en el pasado (solo al crear)
   validate :fecha_no_en_el_pasado, on: :create
- 
+  # Scope para búsqueda
+  scope :search_by_name, ->(query) {
+    where("nombre ILIKE ? OR descripcion ILIKE ?", "%#{query}%", "%#{query}%")
+  }
+  
   private
  
   def fecha_no_en_el_pasado

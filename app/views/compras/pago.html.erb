@@ -1,0 +1,345 @@
+<% content_for :title, "Confirmar Pago – #{@compra.boletos.first&.zona&.evento&.nombre}" %>
+
+<%
+  boleto          = @compra.boletos.first
+  zona            = boleto&.zona
+  evento          = zona&.evento
+  total_cents     = @compra.precio_total.to_i
+%>
+
+<section class="bg-purple-100 min-h-screen antialiased pb-16">
+
+  <%# BREADCRUMB %>
+  <div class="bg-white border-b border-purple-200 py-3">
+    <div class="max-w-7xl mx-auto px-4 flex items-center gap-2 text-xs text-gray-500">
+      <%= link_to "Inicio", root_path, class: "hover:text-purple-700" %>
+      <span>›</span>
+      <% if evento %>
+        <%= link_to evento.nombre, pagina_eventos_path(id: evento.id), class: "hover:text-purple-700 truncate max-w-[180px]" %>
+        <span>›</span>
+      <% end %>
+      <span class="text-purple-700 font-semibold">Confirmar pago</span>
+    </div>
+  </div>
+
+  <%# PASOS %>
+  <div class="bg-white border-b border-purple-100 py-4">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-center gap-4 text-sm">
+        <div class="flex items-center gap-2 opacity-60">
+          <span class="w-7 h-7 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center">✓</span>
+          <span class="font-medium text-gray-500 hidden sm:inline">Elige tu zona</span>
+        </div>
+        <div class="w-12 h-px bg-purple-700"></div>
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center">2</span>
+          <span class="font-bold text-purple-900 hidden sm:inline">Confirmar pago</span>
+        </div>
+        <div class="w-12 h-px bg-purple-200"></div>
+        <div class="flex items-center gap-2 opacity-40">
+          <span class="w-7 h-7 rounded-full bg-purple-200 text-purple-900 text-xs font-bold flex items-center justify-center">3</span>
+          <span class="font-medium text-gray-500 hidden sm:inline">Tu boleto</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# TÍTULO %>
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-2xl md:text-4xl font-black text-purple-950 tracking-tight">
+      <%= evento&.nombre %>
+    </h1>
+    <p class="text-sm text-gray-500 mt-1">
+      <% if evento %>
+        <%= I18n.l(evento.fecha, format: :long) %> · <%= evento.hora.strftime("%I:%M %p") %> · Pereira, Flow Arena
+      <% end %>
+    </p>
+  </div>
+
+  <%= form_with url: confirmar_pago_compra_path(@compra), method: :post, id: "form-pago-principal" do |f| %>
+    <%= f.hidden_field :metodo_pago, value: "tarjeta", id: "hidden-metodo-pago" %>
+
+    <%# GRID PRINCIPAL %>
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+
+      <%# COLUMNA IZQUIERDA %>
+      <div class="flex flex-col gap-5">
+
+        <%# Datos del comprador %>
+        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 border-b border-purple-100">
+            <h2 class="font-black text-sm text-gray-700 uppercase tracking-wider">Información del comprador</h2>
+          </div>
+          <div class="p-5">
+            <% if user_signed_in? %>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Nombre</p>
+                  <p class="font-semibold text-gray-900"><%= current_user.name.presence || "—" %></p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Correo electrónico</p>
+                  <p class="font-semibold text-gray-900"><%= current_user.email %></p>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400 mt-4 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Tu boleto será enviado a este correo al confirmar el pago.
+              </p>
+            <% else %>
+              <div class="flex items-start gap-3 bg-purple-50 rounded-xl p-4">
+                <svg class="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-bold text-purple-900">Compra como invitado</p>
+                  <p class="text-xs text-gray-500 mt-1">Tu boleto será enviado a: <span class="font-semibold text-purple-700"><%= @compra.email %></span></p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Método de pago simulado RF-12 %>
+        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 border-b border-purple-100">
+            <h2 class="font-black text-sm text-gray-700 uppercase tracking-wider">Método de pago</h2>
+            <p class="text-xs text-gray-400 mt-0.5">Simulación de pago — no se realizará ningún cobro real</p>
+          </div>
+          <div class="p-5 pb-2">
+
+            <%# Selector de método %>
+            <div class="flex flex-wrap gap-3 mb-5">
+              <button type="button" data-metodo="tarjeta" onclick="seleccionarMetodo('tarjeta')"
+                      class="metodo-btn active flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all border-purple-600 bg-purple-50 text-purple-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+                Tarjeta
+              </button>
+              <button type="button" data-metodo="pse" onclick="seleccionarMetodo('pse')"
+                      class="metodo-btn flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all border-gray-200 text-gray-600 hover:border-purple-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                </svg>
+                PSE
+              </button>
+              <button type="button" data-metodo="efecty" onclick="seleccionarMetodo('efecty')"
+                      class="metodo-btn flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all border-gray-200 text-gray-600 hover:border-purple-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                </svg>
+                Efecty
+              </button>
+              <button type="button" data-metodo="nequi" onclick="seleccionarMetodo('nequi')"
+                      class="metodo-btn flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all border-gray-200 text-gray-600 hover:border-purple-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Nequi
+              </button>
+            </div>
+
+            <%# Formulario tarjeta %>
+            <div id="form-tarjeta" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5">Número de tarjeta</label>
+                <input type="text" name="numero_tarjeta" placeholder="0000 0000 0000 0000" maxlength="19"
+                       oninput="formatarTarjeta(this)"
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono tracking-widest campo-tarjeta">
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-gray-600 mb-1.5">Vencimiento</label>
+                  <input type="text" name="vencimiento" placeholder="MM / AA" maxlength="7"
+                         oninput="formatarVencimiento(this)"
+                         class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent campo-tarjeta">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-600 mb-1.5">CVV</label>
+                  <input type="text" name="cvv" placeholder="•••" maxlength="4"
+                         class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent campo-tarjeta">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5">Nombre en la tarjeta</label>
+                <input type="text" name="nombre_tarjeta" placeholder="Como aparece en tu tarjeta"
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent campo-tarjeta">
+              </div>
+              <div class="flex gap-2 pt-1">
+                <span class="text-xs bg-gray-100 text-gray-500 rounded px-2 py-1 font-semibold">Visa</span>
+                <span class="text-xs bg-gray-100 text-gray-500 rounded px-2 py-1 font-semibold">Mastercard</span>
+                <span class="text-xs bg-gray-100 text-gray-500 rounded px-2 py-1 font-semibold">Amex</span>
+                <span class="text-xs bg-gray-100 text-gray-500 rounded px-2 py-1 font-semibold">Diners</span>
+              </div>
+            </div>
+
+            <%# PSE %>
+            <div id="form-pse" class="hidden space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5">Banco</label>
+                <select name="banco_pse" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent campo-pse">
+                  <option value="">Selecciona tu banco</option>
+                  <option>Bancolombia</option>
+                  <option>Banco de Bogotá</option>
+                  <option>Davivienda</option>
+                  <option>BBVA Colombia</option>
+                  <option>Banco Popular</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5">Tipo de persona</label>
+                <div class="flex gap-3">
+                  <label class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="radio" name="tipo_persona" value="natural" checked class="accent-purple-600"> Natural
+                  </label>
+                  <label class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="radio" name="tipo_persona" value="juridica" class="accent-purple-600"> Jurídica
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <%# Efecty %>
+            <div id="form-efecty" class="hidden">
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                <p class="font-bold mb-1">¿Cómo pagar con Efecty?</p>
+                <p class="text-xs">Recibirás un código de referencia en tu correo. Preséntalo en cualquier punto Efecty. Tu boleto se emitirá al confirmar el pago.</p>
+              </div>
+            </div>
+
+            <%# Nequi %>
+            <div id="form-nequi" class="hidden space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1.5">Número Nequi</label>
+                <input type="tel" name="numero_nequi" placeholder="+57 300 000 0000"
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent campo-nequi">
+              </div>
+              <div class="bg-purple-50 border border-purple-100 rounded-xl p-3 text-xs text-purple-700">
+                Recibirás una notificación push en tu app Nequi para confirmar el pago.
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-400 mt-5 pb-2">
+              Entorno de pruebas. No se procesará ningún cargo real.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%# COLUMNA DERECHA: RESUMEN %>
+      <div class="lg:sticky lg:top-28 self-start">
+        <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+
+          <div class="bg-purple-700 px-5 py-4 flex items-center justify-between">
+            <h2 class="font-black text-white text-sm uppercase tracking-wider flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+              </svg>
+              Tu pedido
+            </h2>
+            <span class="text-purple-200 text-xs font-medium">Paso 2 de 3</span>
+          </div>
+
+          <div class="p-5">
+            <%# Info evento %>
+            <div class="mb-5 pb-4 border-b border-gray-100">
+              <p class="font-black text-gray-900 text-sm leading-tight"><%= evento&.nombre %></p>
+              <% if evento %>
+                <p class="text-xs text-gray-400 mt-1"><%= I18n.l(evento.fecha, format: :long) %></p>
+                <p class="text-xs text-gray-400">Pereira, Flow Arena</p>
+              <% end %>
+            </div>
+
+            <%# Desglose %>
+            <% @compra.boletos.group_by(&:zona_id).each do |_zona_id, boletos_grupo| %>
+              <% z = boletos_grupo.first.zona %>
+              <div class="flex justify-between text-sm mb-2">
+                <div>
+                  <span class="font-semibold text-gray-800">Zona <%= z.nombre %></span>
+                  <span class="text-gray-400 text-xs ml-1">× <%= boletos_grupo.count %></span>
+                </div>
+                <span class="text-gray-500">
+                  <%= humanized_money_with_symbol(z.precio * boletos_grupo.count) %> COP
+                </span>
+              </div>
+            <% end %>
+
+            <div class="border-t border-gray-100 pt-4 mb-5 flex justify-between items-center">
+              <span class="font-black text-gray-900">Total</span>
+              <span class="font-black text-purple-700 text-xl">
+                <%= humanized_money_with_symbol(total_cents) %> COP
+              </span>
+            </div>
+
+            <button type="submit"
+                    class="w-full py-3.5 rounded-xl font-black text-sm tracking-wide text-white bg-purple-700 hover:bg-purple-800 active:scale-95 transition-all">
+              PAGAR AHORA →
+            </button>
+
+            <p class="flex items-center justify-center gap-1.5 text-xs text-gray-400 mt-3">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" stroke-width="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2"/>
+              </svg>
+              Pago seguro · Boleto digital con QR único
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<script>
+  const metodoActual = () => document.getElementById('hidden-metodo-pago').value;
+
+  function seleccionarMetodo(metodo) {
+    document.querySelectorAll('.metodo-btn').forEach(btn => {
+      btn.classList.remove('border-purple-600', 'bg-purple-50', 'text-purple-700');
+      btn.classList.add('border-gray-200', 'text-gray-600');
+    });
+    const activo = document.querySelector('[data-metodo="' + metodo + '"]');
+    if (activo) {
+      activo.classList.add('border-purple-600', 'bg-purple-50', 'text-purple-700');
+      activo.classList.remove('border-gray-200', 'text-gray-600');
+    }
+    ['tarjeta','pse','efecty','nequi'].forEach(function(m) {
+      const el = document.getElementById('form-' + m);
+      if (el) el.classList.toggle('hidden', m !== metodo);
+    });
+    const hidden = document.getElementById('hidden-metodo-pago');
+    if (hidden) hidden.value = metodo;
+
+    // Habilitar/deshabilitar required según el método activo
+    actualizarRequired(metodo);
+  }
+
+  function actualizarRequired(metodo) {
+    document.querySelectorAll('.campo-tarjeta, .campo-pse, .campo-nequi').forEach(el => {
+      el.required = false;
+    });
+    if (metodo === 'tarjeta') {
+      document.querySelectorAll('.campo-tarjeta').forEach(el => el.required = true);
+    } else if (metodo === 'pse') {
+      document.querySelectorAll('.campo-pse').forEach(el => el.required = true);
+    } else if (metodo === 'nequi') {
+      document.querySelectorAll('.campo-nequi').forEach(el => el.required = true);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => actualizarRequired('tarjeta'));
+
+  function formatarTarjeta(input) {
+    var v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function formatarVencimiento(input) {
+    var v = input.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 3) v = v.substring(0, 2) + ' / ' + v.substring(2);
+    input.value = v;
+  }
+</script>

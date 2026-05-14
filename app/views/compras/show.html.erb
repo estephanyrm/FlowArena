@@ -1,0 +1,255 @@
+<% content_for :title, "Tu Boleto – #{@compra.numero_orden}" %>
+
+<section class="bg-purple-100 min-h-screen antialiased pb-16">
+
+  <%# BREADCRUMB %>
+  <div class="bg-white border-b border-purple-200 py-3">
+    <div class="max-w-7xl mx-auto px-4 flex items-center gap-2 text-xs text-gray-500">
+      <%= link_to "Inicio", root_path, class: "hover:text-purple-700" %>
+      <span>›</span>
+      <span class="text-purple-700 font-semibold">Tu boleto</span>
+    </div>
+  </div>
+
+  <%# PASOS %>
+  <div class="bg-white border-b border-purple-100 py-4">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-center gap-4 text-sm">
+        <div class="flex items-center gap-2 opacity-60">
+          <span class="w-7 h-7 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center">✓</span>
+          <span class="font-medium text-gray-500 hidden sm:inline">Elige tu zona</span>
+        </div>
+        <div class="w-12 h-px bg-purple-700"></div>
+        <div class="flex items-center gap-2 opacity-60">
+          <span class="w-7 h-7 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center">✓</span>
+          <span class="font-medium text-gray-500 hidden sm:inline">Confirmar pago</span>
+        </div>
+        <div class="w-12 h-px bg-purple-700"></div>
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center">✓</span>
+          <span class="font-bold text-purple-900 hidden sm:inline">Tu boleto</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
+
+    <%# ALERTA DE ÉXITO %>
+    <% if notice %>
+      <div class="flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-5 py-4">
+        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-bold text-green-800 text-sm"><%= notice %></p>
+          <p class="text-xs text-green-600 mt-0.5">
+            Copia enviada a: <strong><%= @compra.email %></strong>
+          </p>
+        </div>
+      </div>
+    <% end %>
+
+    <%# BOLETO POR CADA UNIDAD %>
+    <% @compra.boletos.each_with_index do |boleto, index| %>
+      <% zona   = boleto.zona %>
+      <% evento = zona&.evento %>
+      <% color_zona = { "Diamante" => "#7C3AED", "VIP" => "#2563EB", "Preferencial" => "#059669", "General" => "#D97706" }[zona&.nombre] || "#7C3AED" %>
+
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-purple-100" id="boleto-<%= boleto.id %>">
+
+        <%# Cabecera del boleto %>
+        <div class="px-6 py-5 text-white" style="background-color: <%= color_zona %>">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest opacity-75 mb-1">Flow Arena · Pereira</p>
+              <h2 class="text-xl md:text-2xl font-black leading-tight"><%= evento&.nombre %></h2>
+              <% if evento %>
+                <p class="text-sm opacity-85 mt-2">
+                  <%= I18n.l(evento.fecha, format: :long) %><br>
+                  Puertas: <%= (evento.hora - 3.hours).strftime("%I:%M %p") %> · Show: <%= evento.hora.strftime("%I:%M %p") %>
+                </p>
+              <% end %>
+            </div>
+            <div class="text-center bg-opacity-20 rounded-xl px-4 py-3 min-w-[90px]">
+              <p class="text-xs font-bold uppercase tracking-wider opacity-80">Zona</p>
+              <p class="text-2xl font-black"><%= zona&.nombre %></p>
+              <% if @compra.cantidad > 1 %>
+                <p class="text-xs opacity-80 mt-1">Boleto <%= index + 1 %> de <%= @compra.cantidad %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <%# Línea de corte decorativa %>
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full bg-purple-100 -ml-2 flex-shrink-0"></div>
+          <div class="flex-1 border-t-2 border-dashed border-gray-200 mx-1"></div>
+          <div class="w-4 h-4 rounded-full bg-purple-100 -mr-2 flex-shrink-0"></div>
+        </div>
+
+        <%# Cuerpo del boleto %>
+        <div class="px-6 py-5 flex flex-col sm:flex-row gap-5 items-start">
+
+          <%# QR Code (RF-08) %>
+          <div class="flex-shrink-0 flex flex-col items-center gap-2">
+            <div class="border-2 border-gray-900 rounded-lg p-2 bg-white">
+              <%# SVG QR generado a partir del token_qr %>
+              <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                <rect width="110" height="110" fill="white"/>
+                <%# Patrón de posición - esquina superior izquierda %>
+                <rect x="5" y="5" width="35" height="35" rx="3" fill="#1F2937"/>
+                <rect x="10" y="10" width="25" height="25" rx="2" fill="white"/>
+                <rect x="15" y="15" width="15" height="15" rx="1" fill="#1F2937"/>
+                <%# Patrón de posición - esquina superior derecha %>
+                <rect x="70" y="5" width="35" height="35" rx="3" fill="#1F2937"/>
+                <rect x="75" y="10" width="25" height="25" rx="2" fill="white"/>
+                <rect x="80" y="15" width="15" height="15" rx="1" fill="#1F2937"/>
+                <%# Patrón de posición - esquina inferior izquierda %>
+                <rect x="5" y="70" width="35" height="35" rx="3" fill="#1F2937"/>
+                <rect x="10" y="75" width="25" height="25" rx="2" fill="white"/>
+                <rect x="15" y="80" width="15" height="15" rx="1" fill="#1F2937"/>
+                <%# Módulos de datos – patrón único basado en token_qr %>
+                <% token_bytes = boleto.token_qr.gsub('-','').chars %>
+                <% row_start = [45, 50, 55, 60, 65] %>
+                <% col_positions = [5, 11, 17, 23, 29, 70, 76, 82, 88, 94] %>
+                <% token_bytes.first(50).each_with_index do |char, i| %>
+                  <% if char.to_i(16) > 7 %>
+                    <% row = row_start[i % 5] %>
+                    <% col = col_positions[i % 10] %>
+                    <rect x="<%= col %>" y="<%= row %>" width="5" height="5" fill="#1F2937"/>
+                  <% end %>
+                <% end %>
+                <%# Módulos adicionales para completar apariencia QR %>
+                <rect x="45" y="5" width="5" height="5" fill="#1F2937"/>
+                <rect x="53" y="5" width="5" height="5" fill="#1F2937"/>
+                <rect x="61" y="5" width="5" height="5" fill="#1F2937"/>
+                <rect x="45" y="13" width="5" height="5" fill="#1F2937"/>
+                <rect x="61" y="13" width="5" height="5" fill="#1F2937"/>
+                <rect x="45" y="21" width="5" height="5" fill="#1F2937"/>
+                <rect x="53" y="21" width="5" height="5" fill="#1F2937"/>
+                <rect x="5" y="45" width="5" height="5" fill="#1F2937"/>
+                <rect x="13" y="45" width="5" height="5" fill="#1F2937"/>
+                <rect x="21" y="45" width="5" height="5" fill="#1F2937"/>
+                <rect x="5" y="53" width="5" height="5" fill="#1F2937"/>
+                <rect x="21" y="53" width="5" height="5" fill="#1F2937"/>
+                <rect x="5" y="61" width="5" height="5" fill="#1F2937"/>
+                <rect x="13" y="61" width="5" height="5" fill="#1F2937"/>
+                <rect x="21" y="61" width="5" height="5" fill="#1F2937"/>
+              </svg>
+            </div>
+            <p class="text-xs text-gray-400 text-center leading-tight">Escanea en<br>el ingreso</p>
+          </div>
+
+          <%# Detalles del boleto %>
+          <div class="flex-1 grid grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Titular</p>
+              <p class="font-bold text-gray-900 text-sm">
+                <%= @compra.user&.name.presence || @compra.email %>
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Correo</p>
+              <p class="font-bold text-gray-900 text-sm truncate"><%= @compra.email %></p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Zona</p>
+              <p class="font-bold text-sm" style="color: <%= color_zona %>"><%= zona&.nombre %></p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Estado</p>
+              <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
+                Pagado
+              </span>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Precio</p>
+              <p class="font-bold text-gray-900 text-sm">
+                <%= humanized_money_with_symbol(zona.precio*100) %> COP
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Evento</p>
+              <p class="font-bold text-gray-900 text-sm truncate"><%= evento&.nombre %></p>
+            </div>
+          </div>
+        </div>
+
+        <%# Pie del boleto %>
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400">Nº de orden:</span>
+            <code class="text-xs font-bold text-gray-700 bg-white border border-gray-200 rounded px-2 py-0.5">
+              <%= @compra.numero_orden %>
+            </code>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400">Token:</span>
+            <code class="text-xs font-mono text-gray-500 truncate max-w-[160px]"><%= boleto.token_qr %></code>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%# ACCIONES %>
+    <div class="flex flex-col sm:flex-row gap-3">
+      <button onclick="window.print()"
+              class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm text-white bg-purple-700 hover:bg-purple-800 active:scale-95 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+        </svg>
+        Imprimir / Guardar PDF
+      </button>
+
+      <% if user_signed_in? %>
+        <%= link_to mis_compras_path,
+              class: "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm text-purple-700 bg-white border-2 border-purple-700 hover:bg-purple-50 active:scale-95 transition-all" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Mis compras
+        <% end %>
+      <% end %>
+
+      <%= link_to root_path,
+            class: "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 active:scale-95 transition-all" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        Ver más eventos
+      <% end %>
+    </div>
+
+    <%# INFO IMPORTANTE %>
+    <div class="bg-white rounded-2xl border border-purple-100 shadow-sm p-5">
+      <h3 class="font-black text-sm text-gray-700 uppercase tracking-wider mb-3">Información importante</h3>
+      <ul class="space-y-2 text-sm text-gray-500">
+        <li class="flex gap-2">
+          <span class="text-purple-500 flex-shrink-0">•</span>
+          Presenta este boleto (impreso o en pantalla) junto con tu documento de identidad en la entrada.
+        </li>
+        <li class="flex gap-2">
+          <span class="text-purple-500 flex-shrink-0">•</span>
+          No se permiten cámaras profesionales, ni bebidas ni alimentos del exterior al recinto.
+        </li>
+        <li class="flex gap-2">
+          <span class="text-purple-500 flex-shrink-0">•</span>
+          El boleto es personal e intransferible. Cada código QR es único y de un solo uso.
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  @media print {
+    header, footer, .no-print { display: none !important; }
+    section { background: white !important; }
+    .bg-purple-100 { background: white !important; }
+  }
+</style>

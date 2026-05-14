@@ -14,16 +14,16 @@
 
       <%# Barra de búsqueda %>
       <div class="relative z-0 flex flex-1 items-center justify-center px-2 lg:absolute lg:inset-0">
-        <div class="w-full sm:max-w-xs" data-controller="search" data-action="click->search#toggleSearchModal">
-          <label for="buscar" class="sr-only">Buscar</label>
-          <div class="relative">
+        <div class="w-full sm:max-w-xs">
+          <%= form_with url: root_path, method: :get, class: "relative" do |f| %>
+            <label for="buscar" class="sr-only">Buscar</label>
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
               </svg>
             </div>
-            <input id="search-input" autocomplete="off" name="buscar" class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Buscar..." type="search">
-          </div>
+            <%= f.text_field :buscar, value: params[:buscar], id: "search-input", autocomplete: "off", class: "block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6", placeholder: "Buscar eventos..." %>
+          <% end %>
         </div>
       </div>
 
@@ -53,7 +53,7 @@
       <%# Menú Escritorio %>
       <div class="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
         <div class="relative ml-4 flex-shrink-0">
-          <button data-action="click->header#toggleDropdown" data-header-target="openUserMenu" type="button" class="relative flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2" id="user-menu-button">
+          <button data-action="click->header#toggleDropdown" type="button" class="relative flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2" id="user-menu-button">
             <span class="sr-only">Open user menu</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 rounded-full text-gray-700">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />

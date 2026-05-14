@@ -1,0 +1,456 @@
+<% content_for :title, "Comprar Boletos – #{@evento.nombre}" %>
+
+<section class="bg-purple-100 min-h-screen antialiased pb-16"
+         data-controller="mapa-compra"
+         data-mapa-compra-zonas-value="<%= @zonas_json %>"
+         data-mapa-compra-evento-id-value="<%= @evento.id %>">
+
+  <div class="bg-white border-b border-purple-200 py-3">
+    <div class="max-w-7xl mx-auto px-4 flex items-center gap-2 text-xs text-gray-500">
+      <%= link_to "Inicio", root_path, class: "hover:text-purple-700" %>
+      <span>›</span>
+      <%= link_to @evento.nombre, pagina_eventos_path(id: @evento.id), class: "hover:text-purple-700 truncate max-w-[180px]" %>
+      <span>›</span>
+      <span class="text-purple-700 font-semibold">Selección de zona</span>
+    </div>
+  </div>
+
+  <div class="bg-white border-b border-purple-100 py-4">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-center gap-4 text-sm">
+        <%# Paso 1 activo %>
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center">1</span>
+          <span class="font-bold text-purple-900 hidden sm:inline">Elige tu zona</span>
+        </div>
+        <div class="w-12 h-px bg-purple-200"></div>
+        <%# Paso 2 %>
+        <div class="flex items-center gap-2 opacity-40">
+          <span class="w-7 h-7 rounded-full bg-purple-200 text-purple-900 text-xs font-bold flex items-center justify-center">2</span>
+          <span class="font-medium text-gray-500 hidden sm:inline">Confirmar pago</span>
+        </div>
+        <div class="w-12 h-px bg-purple-200"></div>
+        <%# Paso 3 %>
+        <div class="flex items-center gap-2 opacity-40">
+          <span class="w-7 h-7 rounded-full bg-purple-200 text-purple-900 text-xs font-bold flex items-center justify-center">3</span>
+          <span class="font-medium text-gray-500 hidden sm:inline">Tu boleto</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# TÍTULO %>
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-2xl md:text-4xl font-black text-purple-950 tracking-tight">
+      <%= @evento.nombre %>
+    </h1>
+    <p class="text-sm text-gray-500 mt-1">
+      <%= I18n.l(@evento.fecha, format: :long) %> · <%= @evento.hora.strftime("%I:%M %p") %> · Pereira, Flow Arena
+    </p>
+  </div>
+
+  <%#  GRID PRINCIPAL  %>
+  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+
+    <%#  COLUMNA IZQUIERDA: MAPA  %>
+    <div class="flex flex-col gap-5">
+      <%# Mapa SVG del estadio – RF-04 %>
+      <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-purple-100">
+          <h2 class="font-black text-sm text-gray-700 uppercase tracking-wider">Mapa del Recinto</h2>
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/>
+            </svg>
+            Toca una zona para seleccionarla
+          </span>
+        </div>
+
+        <%# Mapa SVG del estadio %>
+        <div class="relative p-4 bg-gray-50" id="mapa-wrapper">
+
+          <%# Tooltip flotante (controlado por JS) %>
+          <div id="zona-tooltip"
+               class="pointer-events-none absolute z-20 hidden bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 text-left min-w-[160px]"
+               style="transition: opacity 0.15s">
+            <p class="font-black text-sm text-gray-900" id="tt-nombre"></p>
+            <p class="text-xs font-bold mt-0.5" id="tt-precio"></p>
+            <p class="text-[11px] text-gray-400 mt-0.5" id="tt-disponibles"></p>
+          </div>
+
+          <% zonas_mapa    = @zonas.index_by { |z| z[:nombre].downcase } %>
+          <% color_general = zonas_mapa['general']&.dig(:color)      || '#D97706' %>
+          <% color_pref    = zonas_mapa['preferencial']&.dig(:color) || '#059669' %>
+          <% color_vip     = zonas_mapa['vip']&.dig(:color)          || '#2563EB' %>
+          <% color_diam    = zonas_mapa['diamante']&.dig(:color)      || '#7C3AED' %>
+          <% id_general    = zonas_mapa['general']&.dig(:id) %>
+          <% id_pref       = zonas_mapa['preferencial']&.dig(:id) %>
+          <% id_vip        = zonas_mapa['vip']&.dig(:id) %>
+          <% id_diam       = zonas_mapa['diamante']&.dig(:id) %>
+
+          <%# Determinar si cada zona está agotada %>
+          <% agotada_general = (zonas_mapa['general']&.dig(:disponibles) || 0) <= 0 %>
+          <% agotada_pref    = (zonas_mapa['preferencial']&.dig(:disponibles) || 0) <= 0 %>
+          <% agotada_vip     = (zonas_mapa['vip']&.dig(:disponibles) || 0) <= 0 %>
+          <% agotada_diam    = (zonas_mapa['diamante']&.dig(:disponibles) || 0) <= 0 %>
+
+          <svg id="svg-estadio" viewBox="0 0 800 500" class="w-full h-auto"
+               xmlns="http://www.w3.org/2000/svg"
+               role="img" aria-label="Mapa interactivo del estadio Flow Arena">
+            <defs>
+              <%# Gradientes suaves con fondo claro %>
+              <linearGradient id="grad-general" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="<%= color_general %>" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="<%= color_general %>" stop-opacity="0.65"/>
+              </linearGradient>
+              <linearGradient id="grad-pref" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="<%= color_pref %>" stop-opacity="0.88"/>
+                <stop offset="100%" stop-color="<%= color_pref %>" stop-opacity="0.68"/>
+              </linearGradient>
+              <linearGradient id="grad-vip" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="<%= color_vip %>" stop-opacity="0.90"/>
+                <stop offset="100%" stop-color="<%= color_vip %>" stop-opacity="0.70"/>
+              </linearGradient>
+              <linearGradient id="grad-diam" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="<%= color_diam %>" stop-opacity="0.93"/>
+                <stop offset="100%" stop-color="<%= color_diam %>" stop-opacity="0.75"/>
+              </linearGradient>
+
+              <%# Patrón de rayas para zonas agotadas %>
+              <pattern id="agotada-pattern" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                <rect width="8" height="8" fill="rgba(156,163,175,0.25)"/>
+                <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(156,163,175,0.5)" stroke-width="3"/>
+              </pattern>
+
+              <%# Sombra suave para hover %>
+              <filter id="sombra-hover" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="rgba(0,0,0,0.25)"/>
+              </filter>
+            </defs>
+
+            <%# CSS para interactividad %>
+            <style>
+              .zona-anillo {
+                transition: filter 0.2s ease, opacity 0.2s ease;
+                cursor: pointer;
+              }
+              .zona-anillo:hover {
+                filter: url(#sombra-hover) brightness(1.08);
+              }
+              .zona-agotada {
+                cursor: not-allowed;
+                opacity: 0.55;
+              }
+              .zona-agotada:hover {
+                filter: none;
+              }
+              .zona-label {
+                font-family: 'Inter', ui-sans-serif, sans-serif;
+                font-weight: 700;
+                pointer-events: none;
+                letter-spacing: 0.08em;
+              }
+            </style>
+
+            <%# Fondo gris muy claro (mismo tono que bg-gray-50) %>
+            <rect width="800" height="500" fill="#F9FAFB"/>
+            <%# Halo exterior decorativo %>
+            <ellipse cx="400" cy="252" rx="355" ry="222" fill="#E5E7EB"/>
+
+            <g transform="translate(400, 252)">
+
+              <%# ── GENERAL ── %>
+              <ellipse class="zona-anillo <%= 'zona-agotada' if agotada_general %>"
+                data-zona-id="<%= id_general %>"
+                data-zona-nombre="<%= zonas_mapa['general']&.dig(:nombre) %>"
+                data-zona-precio="<%= zonas_mapa['general']&.dig(:precio) %>"
+                data-zona-disponibles="<%= zonas_mapa['general']&.dig(:disponibles) %>"
+                data-zona-capacidad="<%= zonas_mapa['general']&.dig(:capacidad) %>"
+                cx="0" cy="0" rx="340" ry="210"
+                fill="url(#grad-general)" stroke="white" stroke-width="2.5"
+                <% unless agotada_general %>data-action="click->mapa-compra#seleccionarZona"<% end %>/>
+              <%# Si agotada, superponer patrón de rayas y ícono %>
+              <% if agotada_general %>
+                <ellipse cx="0" cy="0" rx="340" ry="210" fill="url(#agotada-pattern)" pointer-events="none"/>
+              <% end %>
+              <ellipse cx="0" cy="0" rx="276" ry="168" fill="#F9FAFB" pointer-events="none"/>
+
+              <%# ── PREFERENCIAL ── %>
+              <ellipse class="zona-anillo <%= 'zona-agotada' if agotada_pref %>"
+                data-zona-id="<%= id_pref %>"
+                data-zona-nombre="<%= zonas_mapa['preferencial']&.dig(:nombre) %>"
+                data-zona-precio="<%= zonas_mapa['preferencial']&.dig(:precio) %>"
+                data-zona-disponibles="<%= zonas_mapa['preferencial']&.dig(:disponibles) %>"
+                data-zona-capacidad="<%= zonas_mapa['preferencial']&.dig(:capacidad) %>"
+                cx="0" cy="0" rx="276" ry="168"
+                fill="url(#grad-pref)" stroke="white" stroke-width="2.5"
+                <% unless agotada_pref %>data-action="click->mapa-compra#seleccionarZona"<% end %>/>
+              <% if agotada_pref %>
+                <ellipse cx="0" cy="0" rx="276" ry="168" fill="url(#agotada-pattern)" pointer-events="none"/>
+              <% end %>
+              <ellipse cx="0" cy="0" rx="210" ry="125" fill="#F9FAFB" pointer-events="none"/>
+
+              <%# ── VIP ── %>
+              <ellipse class="zona-anillo <%= 'zona-agotada' if agotada_vip %>"
+                data-zona-id="<%= id_vip %>"
+                data-zona-nombre="<%= zonas_mapa['vip']&.dig(:nombre) %>"
+                data-zona-precio="<%= zonas_mapa['vip']&.dig(:precio) %>"
+                data-zona-disponibles="<%= zonas_mapa['vip']&.dig(:disponibles) %>"
+                data-zona-capacidad="<%= zonas_mapa['vip']&.dig(:capacidad) %>"
+                cx="0" cy="0" rx="210" ry="125"
+                fill="url(#grad-vip)" stroke="white" stroke-width="2.5"
+                <% unless agotada_vip %>data-action="click->mapa-compra#seleccionarZona"<% end %>/>
+              <% if agotada_vip %>
+                <ellipse cx="0" cy="0" rx="210" ry="125" fill="url(#agotada-pattern)" pointer-events="none"/>
+              <% end %>
+              <ellipse cx="0" cy="0" rx="142" ry="80" fill="#F9FAFB" pointer-events="none"/>
+
+              <%# ── DIAMANTE ── %>
+              <ellipse class="zona-anillo <%= 'zona-agotada' if agotada_diam %>"
+                data-zona-id="<%= id_diam %>"
+                data-zona-nombre="<%= zonas_mapa['diamante']&.dig(:nombre) %>"
+                data-zona-precio="<%= zonas_mapa['diamante']&.dig(:precio) %>"
+                data-zona-disponibles="<%= zonas_mapa['diamante']&.dig(:disponibles) %>"
+                data-zona-capacidad="<%= zonas_mapa['diamante']&.dig(:capacidad) %>"
+                cx="0" cy="0" rx="142" ry="80"
+                fill="url(#grad-diam)" stroke="white" stroke-width="2.5"
+                <% unless agotada_diam %>data-action="click->mapa-compra#seleccionarZona"<% end %>/>
+              <% if agotada_diam %>
+                <ellipse cx="0" cy="0" rx="142" ry="80" fill="url(#agotada-pattern)" pointer-events="none"/>
+              <% end %>
+
+              <%# ── ESCENARIO ── %>
+              <rect x="-54" y="-23" width="108" height="46" rx="6" fill="#1F2937" pointer-events="none"/>
+              <rect x="-54" y="-23" width="108" height="46" rx="6" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1" pointer-events="none"/>
+              <text x="0" y="-5" text-anchor="middle" class="zona-label" font-size="7.5" fill="rgba(255,255,255,0.5)" letter-spacing="2.5">ESCENARIO</text>
+              <text x="0" y="9" text-anchor="middle" class="zona-label" font-size="6.5" fill="rgba(255,255,255,0.3)" letter-spacing="1.5">FLOW ARENA</text>
+
+              <%# ── Etiquetas de zona ── %>
+              <text x="0" y="-55"  text-anchor="middle" class="zona-label" font-size="9"   fill="white">Diamante</text>
+              <% if agotada_diam %>
+                <text x="0" y="-42" text-anchor="middle" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.7)" pointer-events="none">AGOTADO</text>
+              <% end %>
+
+              <text x="0" y="-102" text-anchor="middle" class="zona-label" font-size="9"   fill="white">VIP</text>
+              <% if agotada_vip %>
+                <text x="0" y="-90" text-anchor="middle" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.7)" pointer-events="none">AGOTADO</text>
+              <% end %>
+
+              <text x="0" y="-148" text-anchor="middle" class="zona-label" font-size="8.5" fill="white">Preferencial</text>
+              <% if agotada_pref %>
+                <text x="0" y="-136" text-anchor="middle" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.7)" pointer-events="none">AGOTADO</text>
+              <% end %>
+
+              <text x="0" y="-192" text-anchor="middle" class="zona-label" font-size="8.5" fill="white">General</text>
+              <% if agotada_general %>
+                <text x="0" y="-180" text-anchor="middle" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.7)" pointer-events="none">AGOTADO</text>
+              <% end %>
+
+              <%# Puntos cardinales %>
+              <text x="0" y="-228" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#9CA3AF" pointer-events="none">N</text>
+              <text x="0" y="246"  text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#9CA3AF" pointer-events="none">S</text>
+            </g>
+          </svg>
+
+          <%# Leyenda %>
+          <div class="flex flex-wrap gap-3 justify-center mt-3">
+            <% @zonas.each do |zona| %>
+              <% agotada = zona[:disponibles] <= 0 %>
+              <div class="flex items-center gap-1.5 text-xs <%= agotada ? 'text-gray-400 line-through' : 'text-gray-600' %>">
+                <span class="w-3 h-3 rounded-sm inline-block <%= 'opacity-40' if agotada %>"
+                      style="background: <%= zona[:color] %>"></span>
+                <%= zona[:nombre] %>
+                <% if agotada %><span class="no-underline text-red-400 font-semibold">(Agotado)</span><% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <%# JS: Tooltip flotante sobre el mapa %>
+      <script>
+        (function() {
+          const wrapper  = document.getElementById('mapa-wrapper');
+          const tooltip  = document.getElementById('zona-tooltip');
+          const ttNombre = document.getElementById('tt-nombre');
+          const ttPrecio = document.getElementById('tt-precio');
+          const ttDisp   = document.getElementById('tt-disponibles');
+
+          if (!wrapper || !tooltip) return;
+
+          const formatCOP = (cents) =>
+            new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 })
+                .format(cents);
+
+          function showTooltip(el, e) {
+            const nombre     = el.dataset.zonaNombre;
+            const precio     = el.dataset.zonaPrice  || el.dataset.zonaPrecio;
+            const disp       = el.dataset.zonaDisponibles;
+            const cap        = el.dataset.zonaCapacidad;
+            const agotada    = parseInt(disp) <= 0;
+
+            ttNombre.textContent = nombre || '–';
+            ttNombre.style.color = agotada ? '#9CA3AF' : (el.getAttribute('fill')?.includes('url') ? '#111' : '#111');
+            ttPrecio.textContent = precio ? formatCOP(parseInt(precio)) : '–';
+            ttPrecio.style.color = agotada ? '#9CA3AF' : '#7C3AED';
+            ttDisp.textContent   = agotada
+              ? 'Agotado'
+              : `${parseInt(disp).toLocaleString('es-CO')} disponibles de ${parseInt(cap).toLocaleString('es-CO')}`;
+
+            positionTooltip(e);
+            tooltip.classList.remove('hidden');
+          }
+
+          function positionTooltip(e) {
+            const rect = wrapper.getBoundingClientRect();
+            let x = e.clientX - rect.left + 14;
+            let y = e.clientY - rect.top  - 10;
+            if (x + 180 > rect.width) x = e.clientX - rect.left - 180;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top  = y + 'px';
+          }
+
+          document.querySelectorAll('.zona-anillo').forEach(el => {
+            el.addEventListener('mouseenter', (e) => showTooltip(el, e));
+            el.addEventListener('mousemove',  (e) => positionTooltip(e));
+            el.addEventListener('mouseleave', ()  => tooltip.classList.add('hidden'));
+          });
+        })();
+      </script>
+    </div>
+
+    <%# COLUMNA DERECHA: PANEL DE COMPRA %>
+    <div class="lg:sticky lg:top-28 self-start">
+      <div class="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden"
+           id="panel-compra">
+
+        <%# Header del panel %>
+        <div class="bg-purple-700 px-5 py-4 flex items-center justify-between">
+          <h2 class="font-black text-white text-sm uppercase tracking-wider flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+            </svg>
+            Tu pedido
+          </h2>
+          <span class="text-purple-200 text-xs font-medium" id="panel-paso">Paso 1 de 3</span>
+        </div>
+
+        <%# Estado vacío %>
+        <div id="panel-vacio" class="px-5 py-10 text-center">
+          <div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+          </div>
+          <p class="font-black text-gray-800 text-sm mb-1">Elige tu zona</p>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Selecciona una zona en el mapa o en las tarjetas de arriba para continuar.
+          </p>
+          <div class="flex flex-wrap gap-2 justify-center mt-4">
+            <% @zonas.each do |zona| %>
+              <span class="text-xs font-semibold px-3 py-1 rounded-full border"
+                    style="color: <%= zona[:color] %>; border-color: <%= zona[:color] %>20; background: <%= zona[:color] %>10">
+                <%= zona[:nombre] %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Estado con zona seleccionada %>
+        <div id="panel-seleccionado" class="hidden">
+          <%# Zona badge %>
+          <div class="px-5 pt-5">
+            <div class="flex items-center gap-3 p-3 rounded-xl border-2 mb-4"
+                 id="zona-badge" style="border-color: #7C3AED20; background: #7C3AED08">
+              <div class="w-3 h-3 rounded-full flex-shrink-0" id="zona-dot"></div>
+              <div class="flex-1 min-w-0">
+                <p class="font-black text-gray-900 text-sm" id="zona-nombre-panel">–</p>
+                <p class="text-xs text-gray-500" id="zona-disponibles-panel">–</p>
+              </div>
+              <p class="font-black text-sm" id="zona-precio-panel">–</p>
+            </div>
+
+            <%# Barra de disponibilidad %>
+            <div class="mb-4">
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Disponibilidad</span>
+                <span id="barra-texto">–</span>
+              </div>
+              <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500" id="barra-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <%# Cantidad %>
+            <div class="flex items-center justify-between mb-5">
+              <span class="text-sm text-gray-600 font-medium">Cantidad de boletos</span>
+              <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+                <button type="button" id="btn-menos"
+                        class="w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-lg transition-colors"
+                        data-action="click->mapa-compra#menos">−</button>
+                <span class="w-10 text-center font-black text-base text-gray-900" id="cantidad-display">1</span>
+                <button type="button" id="btn-mas"
+                        class="w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-lg transition-colors"
+                        data-action="click->mapa-compra#mas">+</button>
+              </div>
+            </div>
+
+            <%# Totales %>
+            <div class="bg-purple-50 rounded-xl p-4 mb-4">
+              <div class="flex justify-between text-sm text-gray-500 mb-2">
+                <span id="subtotal-label">1 boleto × $0</span>
+                <span id="subtotal-valor">$0</span>
+              </div>
+              <div class="flex justify-between text-sm text-gray-500 mb-3">
+              </div>
+              <div class="border-t border-purple-200 pt-3 flex justify-between items-center">
+                <span class="font-black text-gray-900 text-sm">Total</span>
+                <span class="font-black text-purple-700 text-xl" id="total-valor">$0</span>
+              </div>
+            </div>
+          </div>
+
+          <%# Email invitado (solo si no está logueado) %>
+          <% unless user_signed_in? %>
+            <div class="px-5 mb-4" id="email-invitado-section">
+              <label class="block text-xs font-bold text-gray-600 mb-1">Tu correo electrónico <span class="text-red-500">*</span></label>
+              <input type="email" id="email-invitado" name="email_invitado"
+                     placeholder="Para recibir tu boleto digital"
+                     class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                     data-action="input->mapa-compra#validarEmail">
+            </div>
+          <% end %>
+
+          <%# Botón continuar (formulario real) %>
+          <div class="px-5 pb-5">
+            <%= form_with url: compras_path, method: :post, id: "form-compra", local: true do |f| %>
+              <%= f.hidden_field :evento_id, value: @evento.id %>
+              <%= f.hidden_field :zona_id, id: "hidden-zona-id", value: "" %>
+              <%= f.hidden_field :cantidad, id: "hidden-cantidad", value: "1" %>
+              <% unless user_signed_in? %>
+                <%= f.hidden_field :email_invitado, id: "hidden-email", value: "" %>
+              <% end %>
+
+              <button type="submit" id="btn-continuar"
+                      disabled
+                      class="w-full py-3.5 rounded-xl font-black text-sm tracking-wide text-white
+                             bg-purple-300 cursor-not-allowed transition-all
+                             disabled:bg-purple-300 disabled:cursor-not-allowed"
+                      id="btn-submit">
+                CONTINUAR AL PAGO →
+              </button>
+            <% end %>
+
+            <p class="flex items-center justify-center gap-1.5 text-xs text-gray-400 mt-3">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" stroke-width="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke-width="2"/>
+              </svg>
+              Pago seguro · Boleto digital con QR único
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

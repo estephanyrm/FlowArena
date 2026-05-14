@@ -1,6 +1,9 @@
 class Admin::UsuariosController < Admin::BaseController
   def index
     @usuarios = User.all
+    if params[:search].present?
+      @usuarios = @usuarios.search_by_query(params[:search])
+    end
   end
 
   def new

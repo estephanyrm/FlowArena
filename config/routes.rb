@@ -13,6 +13,15 @@ Rails.application.routes.draw do
   get 'pagina_eventos', to: 'home#pagina_eventos', as: 'pagina_eventos'
   resources :eventos, only: [:show]
 
+  # Rutas para Compras (RF-06, RF-12)
+  resources :compras, only: [:index, :show, :create, :new] do
+    member do
+      get  :pago
+      post :confirmar_pago
+    end
+  end
+  get 'mis_compras', to: 'compras#index', as: 'mis_compras'
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

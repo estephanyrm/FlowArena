@@ -22,9 +22,9 @@
         <%= f.text_field :search, value: params[:search], placeholder: "Buscar por nombre...",
             class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
       </div>
-      <%= f.submit "Buscar", class: "px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-lg hover:bg-gray-800 cursor-pointer" %>
+      <%= f.submit "Buscar", class: "px-4 py-2 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-800 cursor-pointer" %>
     <% end %>
-  </div>
+  </div> 
 
   <%# Tabla de eventos %>
   <div class="overflow-x-auto rounded-lg shadow">
@@ -72,7 +72,7 @@
               <% else %>
                 <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full dark:bg-red-900 dark:text-red-300">Cerrado</span>
               <% end %>
-            </td>
+            </td> 
             <td class="p-4">
               <div class="flex flex-wrap gap-2">
                 <%# Editar %>

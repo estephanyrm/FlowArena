@@ -4,7 +4,7 @@
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
 
-    <%# Widget: Ingresos %>
+    <%# Ingresos %>
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <div class="flex items-center">
         <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-green-100 rounded-lg dark:bg-green-900">
@@ -16,13 +16,13 @@
         <div class="ml-4">
           <span class="text-sm text-gray-500 dark:text-gray-400">Ingresos totales</span>
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            <%= number_to_currency(Pago.where(estado: true).sum(:monto), unit: '$', separator: ',', delimiter: '.', precision: 0) rescue '$0' %>
+            <%= number_to_currency(@total_ingresos, unit: '$', separator: ',', delimiter: '.', precision: 0) %>
           </div>
         </div>
       </div>
     </div>
 
-    <%# Widget: Boletos vendidos %>
+    <%# Boletos vendidos %>
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <div class="flex items-center">
         <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-blue-100 rounded-lg dark:bg-blue-900">
@@ -33,13 +33,13 @@
         <div class="ml-4">
           <span class="text-sm text-gray-500 dark:text-gray-400">Boletos vendidos</span>
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            <%= Boleto.count rescue 0 %>
+            <%= @total_boletos %>
           </div>
         </div>
       </div>
     </div>
 
-    <%# Widget: Eventos activos %>
+    <%# Eventos activos %>
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <div class="flex items-center">
         <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-purple-100 rounded-lg dark:bg-purple-900">
@@ -50,13 +50,13 @@
         <div class="ml-4">
           <span class="text-sm text-gray-500 dark:text-gray-400">Eventos activos</span>
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            <%= Evento.where(estado: 'activo').count rescue 0 %>
+            <%= @total_eventos_activos %>
           </div>
         </div>
       </div>
     </div>
 
-    <%# Widget: Usuarios registrados %>
+    <%# Usuarios registrados %>
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <div class="flex items-center">
         <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-yellow-100 rounded-lg dark:bg-yellow-900">
@@ -67,7 +67,7 @@
         <div class="ml-4">
           <span class="text-sm text-gray-500 dark:text-gray-400">Usuarios registrados</span>
           <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            <%= User.count rescue 0 %>
+            <%= @total_usuarios %>
           </div>
         </div>
       </div>
@@ -132,9 +132,17 @@
             <% compras.each do |compra| %>
               <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td class="p-3 text-sm font-mono text-gray-900 dark:text-white">#<%= compra.numero_orden %></td>
-                <td class="p-3 text-sm text-gray-500 dark:text-gray-400"><%= compra.comprador&.email || compra.comprador_type %></td>
+                <td class="p-3 text-sm text-gray-500 dark:text-gray-400">
+                  <% if compra.user.present? %>
+                    <%= compra.user.email %> <span class="text-xs text-blue-500">(Registrado)</span>
+                  <% elsif compra.email.present? %>
+                    <%= compra.email %> <span class="text-xs text-green-500">(Invitado)</span>
+                  <% else %>
+                    <span class="text-red-400">Sin datos de contacto</span>
+                  <% end %>
+                </td>
                 <td class="p-3 text-sm font-semibold text-gray-900 dark:text-white"><%= number_to_currency(compra.precio_total, unit: '$', separator: ',', delimiter: '.', precision: 0) %></td>
-                <td class="p-3 text-sm text-gray-500 dark:text-gray-400"><%= compra.fecha_compra.strftime("%d/%m/%Y") %></td>
+                <td class="p-3 text-sm text-gray-500 dark:text-gray-400"><%= (compra.fecha_compra || compra.created_at)&.strftime("%d/%m/%Y") || '–' %></td>
                 <td class="p-3">
                   <% if compra.pago&.estado %>
                     <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Pagado</span>

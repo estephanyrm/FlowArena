@@ -6,7 +6,7 @@
     <div class="bg-purple-100 border-b border-purple-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
             <div class="flex flex-col md:flex-row gap-8 items-stretch">
-                <%# Imagen del Evento  - Ajustada para no recortarse %>
+                <%# Imagen del Evento %>
                 <div class="w-full md:w-1/2 lg:w-5/12 flex items-center justify-center">
                     <div class="relative w-full aspect-square overflow-hidden rounded-lg shadow-2xl bg-gray-900 flex items-center justify-center">
                         <%= image_tag @evento.imagen, class: "max-w-full max-h-full object-contain" %>
@@ -42,10 +42,17 @@
 
                         <%# Botón Comprar %>
                         <div class="w-full lg:w-auto">
-                            <button class="w-full lg:w-64 bg-purple-700 hover:bg-purple-800 text-white font-bold py-4 px-8 rounded-lg flex items-center justify-between transition-all shadow-lg hover:shadow-purple-200 active:scale-95">
-                                <span class="uppercase tracking-widest text-sm">Comprar</span>
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
+                            <%= link_to new_compra_path(evento_id: @evento.id),
+                                class: "w-full lg:w-64 bg-purple-700 hover:bg-purple-800 text-white font-bold
+                                        py-4 px-8 rounded-lg flex items-center justify-between transition-all
+                                        shadow-lg hover:shadow-purple-200 active:scale-95" do %>
+                            <span class="uppercase tracking-widest text-sm">Comprar</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                            <% end %>
+                        </div>
+
                         </div>
                     </div>
                 </div>
@@ -141,6 +148,7 @@
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 md:p-8 bg-gray-900">
                 <% @evento.zonas.each do |zone| %>
+                    <%= link_to new_compra_path(evento_id: @evento.id), class: "block" do %>
                     <% 
                         gold_diagonal_gradient = 'bg-[linear-gradient(135deg,#5a3b00_0%,#ffd700_35%,#fff3a3_50%,#ffd700_65%,#b8860b_100%)]'
                         gold_palette = { diamante: gold_diagonal_gradient, vip: gold_diagonal_gradient, preferencial: gold_diagonal_gradient, general: gold_diagonal_gradient }
@@ -164,6 +172,7 @@
                             </p>
                         </div>
                     </div>
+                <% end %>
                 <% end %>
             </div>
 

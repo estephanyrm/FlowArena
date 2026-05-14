@@ -1,20 +1,62 @@
 wb = xlsx_package.workbook
 
 wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
-  # Estilo para el encabezado
-  header = sheet.styles.add_style(bg_color: "4F46E5", fg_color: "FFFFFF", b: true)
+  # Estilos
+  header_style = sheet.styles.add_style(
+    bg_color: "7C3AED", fg_color: "FFFFFF",
+    b: true, sz: 11, alignment: { horizontal: :center }
+  )
+  money_style = sheet.styles.add_style(
+    format_code: '"$"#,##0', alignment: { horizontal: :right }
+  )
+  date_style = sheet.styles.add_style(
+    format_code: "DD/MM/YYYY", alignment: { horizontal: :center }
+  )
+  center_style = sheet.styles.add_style(alignment: { horizontal: :center })
 
-  # Títulos de las columnas
-  sheet.add_row ["ID Orden", "Comprador", "Monto", "Fecha", "Estado"], style: header
+  # Encabezados
+  sheet.add_row(
+    ["# Orden", "Comprador", "Evento", "Zona", "Boletos", "Total (COP)", "Fecha compra", "Estado"],
+    style: header_style
+  )
 
-  # Datos de las compras
+  # Datos
   @compras.each do |compra|
-    sheet.add_row [
-      "##{compra.numero_orden}",
-      compra.comprador&.email || "N/A",
-      compra.precio_total,
-      compra.fecha_compra.strftime("%d/%m/%Y"),
-      compra.pago&.estado ? "Pagado" : "Pendiente"
-    ]
+    boleto_r = compra.boletos.first
+    zona_r   = boleto_r&.zona
+    evento_r = zona_r&.evento
+
+    # Usar user o email — ya NO usamos .comprador
+    comprador_email = compra.user&.email || compra.email || '(invitado)'
+    es_pagado = compra.pago&.estado == true || compra.estado == 'completado'
+    monto_real = compra.precio_total.to_i
+
+    sheet.add_row([
+      compra.numero_orden,
+      comprador_email,
+      evento_r&.nombre || '—',
+      zona_r&.nombre   || '—',
+      compra.cantidad,
+      monto_real,
+      compra.created_at.strftime("%d/%m/%Y %H:%M"),
+      es_pagado ? "Pagado" : "Pendiente"
+    ], types: [:string, :string, :string, :string, :integer, :float, :string, :string],
+       style: [nil, nil, nil, nil, center_style, money_style, center_style, center_style])
   end
+
+  # Totales
+  if @compras.any?
+    total_row = @compras.count + 2  # +1 header, +1 base-1
+    total_monto = @compras.sum(:precio_total).to_i
+    total_boletos = @compras.sum(:cantidad)
+
+    sheet.add_row([])
+    sheet.add_row(
+      ["TOTALES", "", "", "", total_boletos, total_monto, "", ""],
+      style: sheet.styles.add_style(b: true, bg_color: "F3F4F6")
+    )
+  end
+
+  # Anchos de columna
+  sheet.column_widths 18, 28, 28, 14, 10, 16, 14, 12
 end
