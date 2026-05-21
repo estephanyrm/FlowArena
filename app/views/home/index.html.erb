@@ -1,7 +1,7 @@
 <div class="bg-purple-100 min-h-screen"> 
 
   <%# carrusel %>
-  <div id="default-carousel" class="relative w-full" data-carousel="slide">
+  <div id="default-carousel" class="relative w-full" data-carousel="slide" data-carousel-interval="6000">
     <div class="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-2xl bg-gray-900">
       <% @carousel_events.each_with_index do |event, index| %>
         <div class="<%= index == 0 ? 'block' : 'hidden' %> h-full w-full duration-700 ease-in-out" data-carousel-item>
@@ -42,35 +42,56 @@
     <% if @events.any? %>
       <div class="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <% @events.each do |event| %>
-        <%= link_to pagina_eventos_path(id: event.id), class: "group" do %>
-          <div class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all h-full">
-            
-            <div class="relative w-full aspect-video bg-gray-900 flex items-center justify-center overflow-hidden">
-              <%= image_tag event.imagen, class: "max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105" %>
-            </div>
-            
-            <div class="p-5 flex flex-col flex-grow">
-              <div class="flex justify-between mb-3">
-                <p class="text-xs font-bold text-purple-700 uppercase"><%= I18n.l(event.fecha, format: "%d %b, %Y") %></p>
-                <p class="text-xs font-bold text-purple-700"><%= event.hora.strftime("%I:%M %p") %></p>
+          <% agotado = event.agotado? %>
+          <div class="<%= agotado ? 'opacity-75 cursor-not-allowed select-none' : 'group cursor-pointer' %>"
+               <% unless agotado %>onclick="window.location='<%= pagina_eventos_path(id: event.id) %>'"<% end %>>
+            <div class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm <%= agotado ? '' : 'hover:shadow-lg transition-all' %> h-full relative">
+
+              <%# Badge Agotado %>
+              <% if agotado %>
+                <div class="absolute top-3 left-3 z-10">
+                  <span class="inline-flex items-center gap-1 bg-red-600 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg uppercase tracking-wide">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    Agotado
+                  </span>
+                </div>
+              <% end %>
+
+              <div class="relative w-full aspect-video bg-gray-900 flex items-center justify-center overflow-hidden">
+                <%= image_tag event.imagen, class: "max-w-full max-h-full object-contain transition-transform duration-500 #{agotado ? 'grayscale' : 'group-hover:scale-105'}" %>
               </div>
 
-              <h3 class="text-lg font-black text-gray-900 leading-tight mb-2"><%= event.nombre %></h3>
-              
-              <div class="flex-grow">
-                <p class="text-sm text-gray-500 line-clamp-2 italic"><%= event.descripcion %></p>
-              </div>
+              <div class="p-5 flex flex-col flex-grow">
+                <div class="flex justify-between mb-3">
+                  <p class="text-xs font-bold text-purple-700 uppercase"><%= I18n.l(event.fecha, format: "%d %b, %Y") %></p>
+                  <p class="text-xs font-bold text-purple-700"><%= event.hora.strftime("%I:%M %p") %></p>
+                </div>
 
-              <div class="mt-6">
-                <span class="inline-flex w-full justify-center items-center rounded-xl bg-purple-600 px-4 py-3 text-sm font-black text-white hover:bg-purple-700 transition-colors">
-                  + info
-                </span>
+                <h3 class="text-lg font-black text-gray-900 leading-tight mb-2"><%= event.nombre %></h3>
+
+                <div class="flex-grow">
+                  <p class="text-sm text-gray-500 line-clamp-2 italic"><%= event.descripcion %></p>
+                </div>
+
+                <div class="mt-6">
+                  <% if agotado %>
+                    <span class="inline-flex w-full justify-center items-center rounded-xl bg-gray-200 px-4 py-3 text-sm font-black text-gray-400">
+                      Sin entradas disponibles
+                    </span>
+                  <% else %>
+                    <span class="inline-flex w-full justify-center items-center rounded-xl bg-purple-600 px-4 py-3 text-sm font-black text-white group-hover:bg-purple-700 transition-colors">
+                      + info
+                    </span>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+      </div>
     <% else %>
       <div class="text-center py-20">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">

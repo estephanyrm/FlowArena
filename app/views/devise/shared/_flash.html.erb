@@ -1,10 +1,43 @@
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<% flash.each do |type, message| %>
-<script>
-  Swal.fire({
-    icon: "<%= type == 'alert' ? 'error' : 'success' %>",
-    text: "<%= message %>"
-  });
-</script>
+<% if flash.any? %>
+  <div id="flash-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full">
+    <% flash.each do |type, message| %>
+      <% is_error = type.to_s.in?(%w[alert error danger]) %>
+      <div class="flash-toast flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg border
+                  <%= is_error ? 'bg-red-50 border-red-200 text-red-800' : 'bg-green-50 border-green-200 text-green-800' %>"
+           role="alert">
+        <div class="flex-shrink-0 mt-0.5">
+          <% if is_error %>
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          <% else %>
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          <% end %>
+        </div>
+        <p class="text-sm font-medium flex-1"><%= message %></p>
+        <button type="button" onclick="this.closest('.flash-toast').remove()"
+                class="flex-shrink-0 <%= is_error ? 'text-red-400 hover:text-red-600' : 'text-green-400 hover:text-green-600' %> transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    <% end %>
+  </div>
+  <script>
+    (function() {
+      setTimeout(function() {
+        var container = document.getElementById('flash-container');
+        if (container) {
+          container.querySelectorAll('.flash-toast').forEach(function(toast) {
+            toast.style.transition = 'opacity 0.5s ease';
+            toast.style.opacity = '0';
+            setTimeout(function() { toast.remove(); }, 500);
+          });
+        }
+      }, 4000);
+    })();
+  </script>
 <% end %>

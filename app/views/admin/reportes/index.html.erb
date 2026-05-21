@@ -6,11 +6,11 @@
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Análisis de ventas</p>
     </div>
     <div class="flex gap-3">
-      <%= link_to export_admin_reportes_path(format: :pdf), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700" do %>
+      <%= link_to export_admin_reportes_path(format: :pdf, fecha_inicio: params[:fecha_inicio], fecha_fin: params[:fecha_fin], evento_id: params[:evento_id]), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700" do %>
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"></path></svg>
         Exportar PDF
       <% end %>
-      <%= link_to export_admin_reportes_path(format: :xlsx), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700" do %>
+      <%= link_to export_admin_reportes_path(format: :xlsx, fecha_inicio: params[:fecha_inicio], fecha_fin: params[:fecha_fin], evento_id: params[:evento_id]), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700" do %>
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
         Exportar Excel
       <% end %>

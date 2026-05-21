@@ -9,10 +9,14 @@ wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
   money_style = sheet.styles.add_style(
     format_code: '"$"#,##0', alignment: { horizontal: :right }
   )
-  date_style = sheet.styles.add_style(
-    format_code: "DD/MM/YYYY", alignment: { horizontal: :center }
-  )
   center_style = sheet.styles.add_style(alignment: { horizontal: :center })
+  total_style  = sheet.styles.add_style(
+    b: true, bg_color: "F3F4F6", alignment: { horizontal: :center }
+  )
+  total_money  = sheet.styles.add_style(
+    b: true, bg_color: "F3F4F6",
+    format_code: '"$"#,##0', alignment: { horizontal: :right }
+  )
 
   # Encabezados
   sheet.add_row(
@@ -26,10 +30,8 @@ wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
     zona_r   = boleto_r&.zona
     evento_r = zona_r&.evento
 
-    # Usar user o email — ya NO usamos .comprador
     comprador_email = compra.user&.email || compra.email || "(invitado)"
     es_pagado = compra.pago&.estado == true || compra.estado == "completado"
-    monto_real = compra.precio_total.to_i
 
     sheet.add_row([
       compra.numero_orden,
@@ -37,23 +39,26 @@ wb.add_worksheet(name: "Reporte de Ventas") do |sheet|
       evento_r&.nombre || "—",
       zona_r&.nombre   || "—",
       compra.cantidad,
-      monto_real,
-      compra.created_at.strftime("%d/%m/%Y %H:%M"),
+      compra.precio_total.to_i,
+      compra.created_at.in_time_zone('America/Bogota').strftime("%d/%m/%Y %H:%M"),
       es_pagado ? "Pagado" : "Pendiente"
-    ], types: [ :string, :string, :string, :string, :integer, :float, :string, :string ],
-       style: [ nil, nil, nil, nil, center_style, money_style, center_style, center_style ])
+    ],
+    types:  [ :string, :string, :string, :string, :integer, :integer, :string, :string ],
+    style:  [ nil, nil, nil, nil, center_style, money_style, center_style, center_style ])
   end
 
-  # Totales
+  # Fila de totales
   if @compras.any?
-    total_row = @compras.count + 2  # +1 header, +1 base-1
-    total_monto = @compras.sum(:precio_total).to_i
-    total_boletos = @compras.sum(:cantidad)
+    total_boletos  = @compras.sum{ |c| c.cantidad.to_i }
+    total_ingresos = @compras.sum { |c| c.precio_total.to_i }
 
-    sheet.add_row([])
+    sheet.add_row([])   # fila en blanco separadora
+
     sheet.add_row(
-      [ "TOTALES", "", "", "", total_boletos, total_monto, "", "" ],
-      style: sheet.styles.add_style(b: true, bg_color: "F3F4F6")
+      [ "TOTALES", "", "", "", total_boletos, total_ingresos, "", "" ],
+      types: [ :string, :string, :string, :string, :integer, :integer, :string, :string ],
+      style: [ total_style, total_style, total_style, total_style,
+               total_style, total_money, total_style, total_style ]
     )
   end
 

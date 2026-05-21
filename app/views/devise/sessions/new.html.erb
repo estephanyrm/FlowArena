@@ -5,12 +5,14 @@
         <%= inline_svg("logo.svg") %>
       </a>
   </div>
-
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-    <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+    <div class="bg-white px-6 py-4 shadow sm:rounded-lg sm:px-12">
       <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <%# Mensajes de error %>
         <%= render "devise/shared/error_messages", resource: resource %>
+        <div class="text-left mt-6">
+          <%= render "devise/shared/back_button", path: root_path, label: "Volver al inicio" %>
+        </div>
         <h2 class="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Iniciar sesión</h2>
        <%# Email %>
         <div class="mt-4">
@@ -22,9 +24,13 @@
           <%= f.label :password, "Contraseña", class:"block text-sm font-medium leading-6 text-gray-900" %>
           <%= f.password_field :password, autocomplete: "current-password", class:"block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" %>
         </div>
+        <%# Habeas Data — solo para usuarios, no para administradores %>
+        <% if resource_name == :user %>
+          <%= render "devise/shared/habeas_data" %>
+        <% end %>
         <%# Boton ingresar %>
           <div class="actions">
-            <%= f.submit "Ingresar", class:"mt-6 flex w-full justify-center rounded-md bg-purple-600 px- py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black" %>
+            <%= f.submit "Ingresar", class:"mt-6 flex w-full justify-center rounded-md bg-purple-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black" %>
           </div>
       <% end %>
     </div>

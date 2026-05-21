@@ -1,5 +1,4 @@
-<!-- Layout principal de la aplicación
-Incluye navbar, footer y yield para vistas -->
+<!-- Layout principal de la aplicación -->
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -30,7 +29,7 @@ Incluye navbar, footer y yield para vistas -->
     </main>
 
     <%# Pie de página %>
-    <footer class="<%= yield(:footer_class).presence || 'bg-purple-100' %> py-6 text-center text-gray-500 text-xs">
+    <footer class="<%= yield(:footer_class).presence || 'bg-purple-100' %> py-8 text-center text-gray-500 text-xs">
       &copy; <%= Time.current.year %> Flow Arena.
     </footer>
     <%# Mensajes de error %>

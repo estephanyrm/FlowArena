@@ -17,6 +17,12 @@ export default class extends Controller {
     this.zonasValue.forEach(z => {
       this.zonasMap[z.id] = z
     })
+
+    // Escuchar cambios en el checkbox de habeas data para re-evaluar el botón
+    const habeasCheckbox = document.querySelector("input[name='habeas_data']")
+    if (habeasCheckbox) {
+      habeasCheckbox.addEventListener("change", () => this._actualizarBoton())
+    }
   }
 
   // ── Selección de zona (desde SVG o tarjeta) ──
@@ -174,7 +180,11 @@ export default class extends Controller {
       if (hiddenEmail) hiddenEmail.value = emailVal
     }
 
-    const habilitado = this.zonaSeleccionada && emailValido
+    // Verificar habeas data (checkbox obligatorio)
+    const habeasCheckbox = document.querySelector("input[name='habeas_data']")
+    const habeasAceptado = habeasCheckbox ? habeasCheckbox.checked : true
+
+    const habilitado = this.zonaSeleccionada && emailValido && habeasAceptado
 
     btn.disabled = !habilitado
     if (habilitado) {

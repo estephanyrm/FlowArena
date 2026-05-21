@@ -52,12 +52,26 @@
 
       <%# Menú Escritorio %>
       <div class="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-        <div class="relative ml-4 flex-shrink-0">
-          <button data-action="click->header#toggleDropdown" type="button" class="relative flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2" id="user-menu-button">
+        <%# Accesos rápidos para usuarios no registrados %>
+        <% unless user_signed_in? %>
+          <div class="flex items-center gap-2 mr-3">
+            <%= link_to "Iniciar sesión", new_user_session_path,
+                class: "text-sm font-semibold text-purple-700 border border-purple-300 rounded-lg px-3 py-1.5 hover:bg-purple-50 transition-colors" %>
+            <%= link_to "Registrarme", new_user_registration_path,
+                class: "text-sm font-semibold text-white bg-purple-700 rounded-lg px-3 py-1.5 hover:bg-purple-800 transition-colors" %>
+          </div>
+        <% end %>
+        <div class="relative ml-2 flex-shrink-0">
+          <button data-action="click->header#toggleDropdown" type="button" class="relative flex items-center gap-2 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 px-2 py-1 hover:bg-gray-50 transition-colors" id="user-menu-button">
             <span class="sr-only">Open user menu</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 rounded-full text-gray-700">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             </svg>
+            <% if user_signed_in? %>
+              <span class="text-sm font-semibold text-gray-800 max-w-[120px] truncate">
+                <%= current_user.name.presence || current_user.email.split('@').first %>
+              </span>
+            <% end %>
           </button>
           
           <%# Dropdown Escritorio %>

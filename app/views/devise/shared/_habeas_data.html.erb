@@ -1,0 +1,29 @@
+<% habeas_id = "habeas_data_#{SecureRandom.hex(4)}" %>
+<div class="mt-5 flex items-start gap-3" data-controller="habeas-data">
+  <div class="flex h-5 items-center mt-0.5">
+    <input type="checkbox"
+           name="habeas_data"
+           id="habeas_data_<%= habeas_id %>"
+           required
+           class="h-4 w-4 rounded border-gray-300 text-purple-600
+                  focus:ring-2 focus:ring-purple-600 cursor-pointer
+                  accent-purple-600">
+  </div>
+  <label for="habeas_data_<%= habeas_id %>"
+         class="text-xs text-gray-600 leading-relaxed cursor-pointer select-none">
+    He leído y acepto la
+    <%= link_to "Política de Tratamiento de Datos Personales",
+                "/politica-de-privacidad",
+                target: "_blank",
+                class: "font-semibold text-purple-700 underline underline-offset-2
+                        hover:text-purple-900 transition-colors" %>,
+    conforme a la Ley 1581 de 2012. Autorizo a Flow Arena a usar mis datos
+    únicamente para la gestión de eventos y boletos.
+    <span class="text-red-500 font-bold">*</span>
+  </label>
+</div>
+
+<%# Mensaje de validación nativa del navegador — refuerzo visual %>
+<p class="mt-1 text-xs text-red-500 hidden" id="habeas-error">
+  Debes aceptar la política de datos para continuar.
+</p>

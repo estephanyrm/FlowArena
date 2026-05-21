@@ -42,7 +42,14 @@ class EventoTest < ActiveSupport::TestCase
   end
 
   test "no debería permitir fechas pasadas al crear" do
-    evento = Evento.new(nombre: "Pasado", descripcion: "Desc", fecha: Date.yesterday, hora: Time.now, imagen: "img.jpg", estado: "activo")
+    evento = Evento.new(
+      nombre: "Pasado",
+      descripcion: "Desc",
+      fecha: Date.today - 30,
+      hora: Time.now,
+      imagen: "img.jpg",
+      estado: "activo"
+    )
     assert_not evento.save, "Permitió crear un evento con fecha pasada"
     assert_includes evento.errors[:fecha], "no puede ser una fecha pasada"
   end
@@ -105,5 +112,48 @@ class EventoTest < ActiveSupport::TestCase
     assert_difference "Zona.count", -1 do
       evento.destroy
     end
+  end
+    
+  test "agotado? retorna true si el evento está cerrado" do
+    evento = Evento.new(
+      nombre: "Test", descripcion: "Desc",
+      fecha: Date.tomorrow, hora: Time.now,
+      imagen: "img.jpg", estado: "cerrado"
+    )
+    assert evento.agotado?
+  end
+
+  test "agotado? retorna true si el evento no tiene zonas" do
+    evento = Evento.create!(
+      nombre: "Sin zonas", descripcion: "Desc",
+      fecha: Date.tomorrow, hora: Time.now,
+      imagen: "img.jpg", estado: "activo"
+    )
+    assert evento.agotado?
+  end
+
+  test "agotado? retorna true si todas las zonas están llenas" do
+    evento = Evento.create!(
+      nombre: "Lleno", descripcion: "Desc",
+      fecha: Date.tomorrow, hora: Time.now,
+      imagen: "img.jpg", estado: "activo"
+    )
+    zona = evento.zonas.create!(nombre: "General", capacidad: 1, precio_cents: 3000)
+    user = User.create!(email: "lleno@test.com", password: "password123", name: "Lleno")
+    compra = user.compras.create!(cantidad: 1, numero_orden: "ORD-AG1", precio_total: 3000, estado: "pendiente")
+    compra.boletos.create!(zona: zona, token_qr: SecureRandom.uuid, estado: "pendiente")
+
+    assert evento.agotado?
+  end
+
+  test "agotado? retorna false si al menos una zona tiene cupos disponibles" do
+    evento = Evento.create!(
+      nombre: "Disponible", descripcion: "Desc",
+      fecha: Date.tomorrow, hora: Time.now,
+      imagen: "img.jpg", estado: "activo"
+    )
+    evento.zonas.create!(nombre: "VIP", capacidad: 5, precio_cents: 10000)
+
+    assert_not evento.agotado?
   end
 end

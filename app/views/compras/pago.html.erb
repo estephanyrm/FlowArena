@@ -1,3 +1,9 @@
+<div class="max-w-2xl mx-auto px-4 pt-6">
+  <%= render "devise/shared/back_button",
+        path: new_compra_path(evento_id: @compra.boletos.first&.zona&.evento_id),
+        label: "Cambiar zona o cantidad" %>
+</div>
+
 <% content_for :title, "Confirmar Pago – #{@compra.boletos.first&.zona&.evento&.nombre}" %>
 
 <%

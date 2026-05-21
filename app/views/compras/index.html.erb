@@ -204,7 +204,7 @@
                 </div>
                 <div>
                   <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-0.5">Fecha compra</p>
-                  <p class="font-bold text-gray-800 text-xs"><%= compra.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+                  <p class="font-bold text-gray-800 text-xs"><%= compra.created_at.in_time_zone('America/Bogota').strftime("%d/%m/%Y %H:%M") %></p>
                 </div>
               </div>
 

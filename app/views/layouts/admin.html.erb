@@ -24,9 +24,141 @@
 
     <main class="p-4 pt-28 lg:ml-64 min-h-screen transition-all duration-75">
       <div class="max-w-7xl mx-auto">
+        <%= render "/devise/shared/flash" %>
         <%= yield %>
       </div>
     </main>
+
+    <%# Modal de confirmación personalizado — reemplaza el alert del navegador %>
+    <div id="confirm-modal"
+         class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4"
+         role="dialog" aria-modal="true">
+      <%# Overlay %>
+      <div id="confirm-overlay" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+      <%# Card %>
+      <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 flex flex-col gap-4">
+        <%# Icono %>
+        <div id="confirm-icon-wrap" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+          <svg id="confirm-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+        </div>
+        <%# Texto %>
+        <div class="text-center">
+          <h3 id="confirm-title" class="text-lg font-black text-gray-900 mb-1"></h3>
+          <p id="confirm-message" class="text-sm text-gray-500 leading-relaxed"></p>
+        </div>
+        <%# Botones %>
+        <div class="flex gap-3 mt-2">
+          <button id="confirm-cancel"
+                  class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+            Cancelar
+          </button>
+          <button id="confirm-ok"
+                  class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors">
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      // Configuraciones por tipo de acción
+      const CONFIGS = {
+        danger: {
+          iconBg:   'bg-red-100',
+          iconColor:'text-red-600',
+          btnBg:    'bg-red-600 hover:bg-red-700',
+          iconPath: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+          title:    '¿Eliminar?'
+        },
+        warning: {
+          iconBg:   'bg-yellow-100',
+          iconColor:'text-yellow-600',
+          btnBg:    'bg-yellow-500 hover:bg-yellow-600',
+          iconPath: 'M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z',
+          title:    '¿Cerrar venta?'
+        },
+        info: {
+          iconBg:   'bg-green-100',
+          iconColor:'text-green-600',
+          btnBg:    'bg-green-600 hover:bg-green-700',
+          iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+          title:    '¿Confirmar?'
+        }
+      };
+
+      function detectType(msg) {
+        if (/elimin|borrar|no se puede deshacer/i.test(msg)) return 'danger';
+        if (/cerrar|no podr/i.test(msg))                      return 'warning';
+        return 'info';
+      }
+
+      function showModal(message, onConfirm) {
+        const modal   = document.getElementById('confirm-modal');
+        const overlay = document.getElementById('confirm-overlay');
+        const okBtn   = document.getElementById('confirm-ok');
+        const cancelBtn = document.getElementById('confirm-cancel');
+        const iconWrap  = document.getElementById('confirm-icon-wrap');
+        const icon      = document.getElementById('confirm-icon');
+        const title     = document.getElementById('confirm-title');
+        const msgEl     = document.getElementById('confirm-message');
+
+        const type   = detectType(message);
+        const config = CONFIGS[type];
+
+        // Aplicar estilos
+        iconWrap.className = `w-12 h-12 rounded-full flex items-center justify-center mx-auto ${config.iconBg}`;
+        icon.className     = `w-6 h-6 ${config.iconColor}`;
+        icon.innerHTML     = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${config.iconPath}"/>`;
+        okBtn.className    = `flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors ${config.btnBg}`;
+        title.textContent  = config.title;
+        msgEl.textContent  = message;
+
+        modal.classList.remove('hidden');
+
+        function close() {
+          modal.classList.add('hidden');
+          okBtn.removeEventListener('click', handleOk);
+          cancelBtn.removeEventListener('click', close);
+          overlay.removeEventListener('click', close);
+        }
+        function handleOk() { close(); onConfirm(); }
+
+        okBtn.addEventListener('click', handleOk);
+        cancelBtn.addEventListener('click', close);
+        overlay.addEventListener('click', close);
+      }
+
+      // Interceptar turbo_confirm
+      document.addEventListener('turbo:before-fetch-request', function() {}, false);
+
+      if (window.Turbo) {
+        Turbo.config.drive.confirmationMethod = function(message, _el, resolve) {
+          showModal(message, () => resolve(true));
+          return false;
+        };
+      } else {
+        document.addEventListener('turbo:load', function() {
+          if (window.Turbo) {
+            Turbo.config.drive.confirmationMethod = function(message, _el, resolve) {
+              showModal(message, () => resolve(true));
+              return false;
+            };
+          }
+        });
+      }
+
+      // Fallback: interceptar data-turbo-confirm en forms/buttons antes de submit
+      document.addEventListener('click', function(e) {
+        const el = e.target.closest('[data-turbo-confirm]');
+        if (!el) return;
+        // Solo si Turbo NO lo interceptó ya
+        if (el._confirmHandled) return;
+        el._confirmHandled = true;
+        setTimeout(function() { el._confirmHandled = false; }, 200);
+      }, true);
+    })();
+    </script>
 
   </body>
 </html>

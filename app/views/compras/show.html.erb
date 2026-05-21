@@ -1,3 +1,7 @@
+<div class="max-w-2xl mx-auto px-4 pt-6">
+  <%= render "devise/shared/back_button", path: mis_compras_path, label: "Mis boletos" %>
+</div>
+
 <% content_for :title, "Tu Boleto – #{@compra.numero_orden}" %>
 
 <section class="bg-purple-100 min-h-screen antialiased pb-16">
@@ -197,12 +201,12 @@
 
     <%# ACCIONES %>
     <div class="flex flex-col sm:flex-row gap-3">
-      <button onclick="window.print()"
+      <button onclick="descargarPDF()"
               class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm text-white bg-purple-700 hover:bg-purple-800 active:scale-95 transition-all">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        Imprimir / Guardar PDF
+        Descargar PDF
       </button>
 
       <% if user_signed_in? %>
@@ -230,7 +234,7 @@
       <ul class="space-y-2 text-sm text-gray-500">
         <li class="flex gap-2">
           <span class="text-purple-500 flex-shrink-0">•</span>
-          Presenta este boleto (impreso o en pantalla) junto con tu documento de identidad en la entrada.
+          Presenta este boleto (impreso o en pantalla).
         </li>
         <li class="flex gap-2">
           <span class="text-purple-500 flex-shrink-0">•</span>
@@ -246,10 +250,30 @@
   </div>
 </section>
 
-<style>
-  @media print {
-    header, footer, .no-print { display: none !important; }
-    section { background: white !important; }
-    .bg-purple-100 { background: white !important; }
+<script>
+  function descargarPDF() {
+    var boletos = document.querySelectorAll('[id^="boleto-"]');
+    var nombres = [];
+    boletos.forEach(function(b) { nombres.push(b.id); });
+
+    var style = document.createElement('style');
+    style.id = 'pdf-style';
+    style.textContent = [
+      'body { background: white !important; }',
+      'header, footer, .no-print, section > div:first-child, section > div:nth-child(2) { display: none !important; }',
+      '.bg-purple-100 { background: white !important; min-height: auto !important; padding-bottom: 0 !important; }',
+      '.max-w-3xl { max-width: 100% !important; padding: 0 16px !important; }',
+      '[id^="boleto-"] { break-inside: avoid; page-break-inside: avoid; margin-bottom: 24px; }',
+      '.flex.flex-col.sm\:flex-row.gap-3 { display: none !important; }',
+      '.bg-white.rounded-2xl.border.border-purple-100.shadow-sm.p-5 { display: none !important; }'
+    ].join(' ');
+    document.head.appendChild(style);
+
+    window.print();
+
+    setTimeout(function() {
+      var s = document.getElementById('pdf-style');
+      if (s) s.remove();
+    }, 1000);
   }
-</style>
+</script>

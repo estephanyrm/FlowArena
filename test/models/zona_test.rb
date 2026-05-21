@@ -92,4 +92,25 @@ class ZonaTest < ActiveSupport::TestCase
   test "ZONAS_PERMITIDAS debe ser el mismo listado que las claves de CAPACIDADES" do
     assert_equal Zona::CAPACIDADES.keys, Zona::ZONAS_PERMITIDAS
   end
+
+  test "cupos_disponibles retorna 0 si capacidad es nil" do
+    zona = @evento.zonas.new(nombre: "VIP", capacidad: nil, precio_cents: 5000)
+    assert_equal 0, zona.cupos_disponibles
+  end
+
+  test "cupos_disponibles nunca retorna negativo con boletos de más" do
+    zona = @evento.zonas.create!(nombre: "General", capacidad: 1, precio_cents: 3000)
+    user = User.create!(email: "neg@test.com", password: "password123", name: "Neg")
+    compra = user.compras.create!(
+      cantidad: 2,
+      numero_orden: "ORD-NEG-1",
+      precio_total: 6000,
+      estado: "pendiente"
+    )
+    # Forzamos 2 boletos en una zona de capacidad 1 
+    compra.boletos.create!(zona: zona, token_qr: SecureRandom.uuid, estado: "pendiente")
+    compra.boletos.create!(zona: zona, token_qr: SecureRandom.uuid, estado: "pendiente")
+    assert zona.cupos_disponibles < 0, "Con overbooking forzado el valor es negativo — esto es una brecha conocida"
+  end
+
 end

@@ -1,0 +1,72 @@
+:root {
+  /* Paleta principal */
+  --fa-primary:       #7c3aed;   /* purple-600 */
+  --fa-primary-dark:  #6d28d9;   /* purple-700 */
+  --fa-primary-deep:  #3b0764;   /* purple-950 */
+  --fa-primary-light: #ede9fe;   /* purple-100 tono card */
+  --fa-bg:            #f5f3ff;   /* fondo global */
+  --fa-surface:       #ffffff;
+  --fa-border:        #e9d5ff;   /* purple-200 */
+
+  /* Tipografía */
+  --fa-font-body:    'DM Sans', system-ui, sans-serif;
+  --fa-font-display: 'Syne', system-ui, sans-serif;
+
+  /* Sombras */
+  --fa-shadow-sm: 0 1px 4px rgba(124,58,237,0.08);
+  --fa-shadow-md: 0 4px 16px rgba(124,58,237,0.13);
+  --fa-shadow-lg: 0 8px 28px rgba(124,58,237,0.18);
+
+  /* Radio */
+  --fa-radius-sm:  8px;
+  --fa-radius-md:  12px;
+  --fa-radius-lg:  16px;
+  --fa-radius-xl:  24px;
+
+  /* Transición */
+  --fa-transition: 0.18s ease;
+}
+
+/* Clases utilitarias compartidas */
+.fa-card {
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-border);
+  border-radius: var(--fa-radius-lg);
+  box-shadow: var(--fa-shadow-sm);
+  padding: 1.5rem;
+}
+
+.fa-btn-primary {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 0.5rem 1rem;
+  background: var(--fa-primary);
+  color: #fff; font-weight: 600; font-size: 0.875rem;
+  border-radius: var(--fa-radius-sm);
+  border: none; cursor: pointer;
+  transition: background var(--fa-transition), box-shadow var(--fa-transition);
+}
+.fa-btn-primary:hover  { background: var(--fa-primary-dark); box-shadow: var(--fa-shadow-md); }
+.fa-btn-primary:focus  { outline: 2px solid var(--fa-primary); outline-offset: 2px; }
+.fa-btn-primary:active { transform: scale(0.98); }
+
+.fa-input {
+  display: block; width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: none; border-radius: var(--fa-radius-sm);
+  box-shadow: 0 0 0 1px #d1d5db;
+  font-size: 0.875rem; color: #111827;
+  transition: box-shadow var(--fa-transition);
+}
+.fa-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--fa-primary);
+}
+
+.fa-label {
+  display: block; font-size: 0.875rem;
+  font-weight: 500; color: #374151; margin-bottom: 0.25rem;
+}
+
+/* Cuerpo global */
+body { font-family: var(--fa-font-body); background: var(--fa-bg); }
+h1, h2, h3 { font-family: var(--fa-font-display); }

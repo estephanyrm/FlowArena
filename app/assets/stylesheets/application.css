@@ -9,7 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
-
+@import "design_tokens";
 #perfil-menu-custom a {
     font-size: 1.125rem; 
     font-weight: 700;  

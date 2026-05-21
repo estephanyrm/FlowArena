@@ -34,15 +34,42 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <%= f.label :capacidad, "Capacidad Total", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>
-          <%= f.number_field :capacidad, min: 0, placeholder: "Ej: 2000",
+          <%= f.number_field :capacidad, min: 1, id: "zona_capacidad", placeholder: "Ej: 2000",
               class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+          <p class="text-xs text-gray-400 mt-1" id="capacidad-hint"></p>
         </div>
         <div>
           <%= f.label :cupos_disponibles, "Cupos disponibles", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>
-          <%= f.number_field :cupos_disponibles, min: 0, placeholder: "Ej: 200",
+          <%= f.number_field :cupos_disponibles, min: 0, id: "zona_cupos_disponibles", placeholder: "Ej: 200",
               class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
         </div>
       </div>
+
+      <script>
+        (function() {
+          var capacidades = { "Diamante": 2000, "VIP": 3000, "Preferencial": 3000, "General": 4000 };
+          var select = document.querySelector('select[name$="[nombre]"]');
+          var capField = document.getElementById('zona_capacidad');
+          var cuposField = document.getElementById('zona_cupos_disponibles');
+          var hint = document.getElementById('capacidad-hint');
+
+          if (!select) return;
+          select.addEventListener('change', function() {
+            var max = capacidades[this.value];
+            if (max) {
+              capField.max = max;
+              cuposField.max = max;
+              capField.value = max;
+              cuposField.value = max;
+              hint.textContent = "Máximo permitido para zona " + this.value + ": " + max.toLocaleString('es-CO');
+            } else {
+              capField.removeAttribute('max');
+              cuposField.removeAttribute('max');
+              hint.textContent = "";
+            }
+          });
+        })();
+      </script>
 
       <div>
         <%= f.label :precio_cents, "Precio (COP)", class: "block mb-1 text-sm font-medium text-gray-900 dark:text-white" %>

@@ -5,11 +5,14 @@
         <%= inline_svg("logo.svg") %>
       </a>
   </div>
-
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-    <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+    <div class="bg-white px-6 py-4 shadow sm:rounded-lg sm:px-12">
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
         <%= render "devise/shared/error_messages", resource: resource %>
+        <%# Boton de volver al inicio %>
+        <div class="text-left mt-6">
+          <%= render "devise/shared/back_button", path: root_path, label: "Volver al inicio" %>
+        </div>
         <h2 class="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Crear cuenta</h2>
         <div class="mt-4">
           <%= f.label :name, "Nombre", class:"block text-sm font-medium leading-6 text-gray-900" %>
@@ -25,6 +28,8 @@
           <%= f.label :password, "Contraseña", class:"block text-sm font-medium leading-6 text-gray-900" %>
           <%= f.password_field :password, autocomplete: "new-password", class:"block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" %>
         </div>
+        <%# Habeas Data %>
+        <%= render "devise/shared/habeas_data" %>
         <div>
           <%= f.submit "Registrarse", class:"mt-6 flex w-full justify-center rounded-md bg-purple-600 px-1.5 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-purple-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black" %>
         </div>

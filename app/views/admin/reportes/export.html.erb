@@ -3,22 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: Arial, sans-serif; font-size: 12px; color: #1f2937; margin: 0; padding: 20px; }
-    h1   { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-    p.sub { font-size: 11px; color: #6b7280; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { background-color: #7c3aed; color: white; }
-    th { padding: 8px 12px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-    td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #1f2937; padding: 24px; background: #fff; }
+    .header { margin-bottom: 20px; border-bottom: 3px solid #7c3aed; padding-bottom: 12px; }
+    h1   { font-size: 20px; font-weight: bold; color: #4c1d95; }
+    p.sub { font-size: 11px; color: #6b7280; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    thead tr { background-color: #7c3aed; color: black; }
+    th { padding: 9px 12px; text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
     tr:nth-child(even) td { background-color: #f9fafb; }
-    .badge-ok  { background:#dcfce7; color:#16a34a; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:bold; }
-    .badge-pen { background:#fef9c3; color:#b45309; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:bold; }
-    .footer { margin-top: 24px; font-size: 10px; color: #9ca3af; text-align: center; }
+    tr.total-row td { background-color: #f3f4f6 !important; border-top: 2.5px solid #7c3aed; font-weight: bold; }
+    .badge-ok  { background:#dcfce7; color:#16a34a; padding:2px 9px; border-radius:99px; font-size:10px; font-weight:bold; display:inline-block; }
+    .badge-pen { background:#fef9c3; color:#b45309; padding:2px 9px; border-radius:99px; font-size:10px; font-weight:bold; display:inline-block; }
+    .monto { font-weight: bold; }
+    .total-label { text-align: right; color: #4c1d95; }
+    .total-monto { color: #7c3aed; font-size: 13px; }
+    .footer { margin-top: 24px; font-size: 10px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 12px; }
+    td.center { text-align: center; }
   </style>
 </head>
 <body>
-  <h1>Reporte de Ventas – Flow Arena</h1>
-  <p class="sub">Generado el <%= Time.now.strftime("%d/%m/%Y a las %H:%M") %> · <%= @compras.count %> compras</p>
+  <%
+    compras_array = @compras.to_a
+    total_boletos  = compras_array.sum { |c| c.cantidad.to_i }
+    total_ingresos = compras_array.sum { |c| c.precio_total.to_i }
+  %>
+
+  <div class="header">
+    <h1>Reporte de Ventas – Flow Arena</h1>
+    <p class="sub">
+      Generado el <%= Time.current.in_time_zone("America/Bogota").strftime("%d/%m/%Y a las %H:%M") %>
+      &nbsp;·&nbsp; <%= compras_array.size %> transacciones
+      &nbsp;·&nbsp; <%= total_boletos %> boletos vendidos
+    </p>
+  </div>
 
   <table>
     <thead>
@@ -27,51 +46,59 @@
         <th>Comprador</th>
         <th>Evento</th>
         <th>Zona</th>
-        <th>Boletos</th>
+        <th class="center">Boletos</th>
         <th>Total</th>
         <th>Fecha</th>
         <th>Estado</th>
       </tr>
     </thead>
     <tbody>
-      <% @compras.each do |compra| %>
-        <%
-          boleto_r = compra.boletos.first
-          zona_r   = boleto_r&.zona
-          evento_r = zona_r&.evento
-          # Usar user o email — ya NO usamos .comprador que no existe
-          comprador_email = compra.user&.email || compra.email || '(invitado)'
-          es_pagado = compra.pago&.estado == true || compra.estado == 'completado'
-        %>
+      <% if compras_array.empty? %>
         <tr>
-          <td><strong><%= compra.numero_orden %></strong></td>
-          <td><%= comprador_email %></td>
-          <td><%= evento_r&.nombre || '—' %></td>
-          <td><%= zona_r&.nombre  || '—' %></td>
-          <td style="text-align:center;"><%= compra.cantidad %></td>
-          <td><strong>$<%= ActiveSupport::NumberHelper.number_to_delimited(compra.precio_total.to_i, delimiter: '.') %></strong></td>
-          <td><%= (compra.created_at).strftime("%d/%m/%Y") %></td>
-          <td>
-            <% if es_pagado %>
-              <span class="badge-ok">Pagado</span>
-            <% else %>
-              <span class="badge-pen">Pendiente</span>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-      <% if @compras.empty? %>
-        <tr>
-          <td colspan="8" style="text-align:center; padding:24px; color:#9ca3af;">
+          <td colspan="8" style="text-align:center; padding:28px; color:#9ca3af;">
             No hay compras completadas para exportar.
           </td>
+        </tr>
+      <% else %>
+        <% compras_array.each do |compra| %>
+          <%
+            boleto_r = compra.boletos.first
+            zona_r   = boleto_r&.zona
+            evento_r = zona_r&.evento
+            comprador_email = compra.user&.email || compra.email || '(invitado)'
+            es_pagado = compra.pago&.estado == true || compra.estado == 'completado'
+          %>
+          <tr>
+            <td><strong><%= compra.numero_orden %></strong></td>
+            <td><%= comprador_email %></td>
+            <td><%= evento_r&.nombre || '—' %></td>
+            <td><%= zona_r&.nombre  || '—' %></td>
+            <td class="center"><%= compra.cantidad %></td>
+            <td class="monto">$<%= ActiveSupport::NumberHelper.number_to_delimited(compra.precio_total.to_i, delimiter: '.') %></td>
+            <td><%= compra.created_at.in_time_zone('America/Bogota').strftime("%d/%m/%Y") %></td>
+            <td>
+              <% if es_pagado %>
+                <span class="badge-ok">Pagado</span>
+              <% else %>
+                <span class="badge-pen">Pendiente</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+
+        <%# Fila de TOTALES %>
+        <tr class="total-row">
+          <td colspan="4" class="total-label">TOTALES</td>
+          <td class="center"><%= total_boletos %></td>
+          <td class="total-monto">$<%= ActiveSupport::NumberHelper.number_to_delimited(total_ingresos, delimiter: '.') %></td>
+          <td colspan="2"></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 
   <p class="footer">
-    Flow Arena &copy; <%= Time.current.year %> · Reporte generado automáticamente
+    Flow Arena &copy; <%= Time.current.year %> &nbsp;·&nbsp; Reporte generado automáticamente
   </p>
 </body>
 </html>

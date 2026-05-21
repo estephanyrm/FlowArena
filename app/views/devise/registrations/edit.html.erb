@@ -5,10 +5,13 @@
       <%= inline_svg("logo.svg") %>
     </a>
   </div>
-
+ 
   <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl sm:p-10">
-    <div class="mb-8">
-      <h2 class="text-2xl font-bold tracking-tight text-gray-900">Editar perfil</h2>
+    <div class="text-left mt-6">
+          <%= render "devise/shared/back_button", path: root_path, label: "Volver al inicio" %>
+    </div>
+    <div class="mb-8 py-2">
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 text-center">Editar perfil</h2>
       <p class="text-sm text-gray-500">Actualiza tu información personal y contraseña.</p>
     </div>
 

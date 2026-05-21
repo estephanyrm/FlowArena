@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   devise_for :users
   root "home#index"
 
+  # Política de privacidad / Habeas Data
+  get "politica-de-privacidad", to: "home#politica_privacidad", as: "politica_privacidad"
+
   # Ruta del perfil
   get "perfil", to: "home#miPerfil", as: "profile"
 

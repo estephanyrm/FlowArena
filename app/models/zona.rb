@@ -18,14 +18,18 @@ class Zona < ApplicationRecord
   validates :nombre, uniqueness: { scope: :evento_id,
             message: "esta zona ya ha sido registrada para este evento" }
   validates :nombre, presence: { message: "debe seleccionar una zona válida" }
-  validates :capacidad,
-          presence: true,
-          numericality: {
-            only_integer: true,
-            greater_than: 0,
-            less_than: 2_147_483_647, # Límite máximo de 4 bytes
-            message: "es un número demasiado grande para el sistema"
-          }
+  validate :capacidad_dentro_del_tope
+
+  def capacidad_dentro_del_tope
+    return if nombre.blank?
+    tope = CAPACIDADES[nombre]
+    return unless tope
+    if capacidad.blank? || capacidad.to_i < 1
+      errors.add(:capacidad, "debe ser mayor a 0")
+    elsif capacidad.to_i > tope
+      errors.add(:capacidad, "no puede superar #{tope} para la zona #{nombre}")
+    end
+  end
 
   def cupos_disponibles
     (capacidad || 0) - boletos.count
