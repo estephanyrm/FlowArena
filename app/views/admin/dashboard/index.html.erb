@@ -144,7 +144,9 @@
                 <td class="p-3 text-sm font-semibold text-gray-900 dark:text-white"><%= number_to_currency(compra.precio_total, unit: '$', separator: ',', delimiter: '.', precision: 0) %></td>
                 <td class="p-3 text-sm text-gray-500 dark:text-gray-400"><%= (compra.fecha_compra || compra.created_at)&.strftime("%d/%m/%Y") || '–' %></td>
                 <td class="p-3">
-                  <% if compra.pago&.estado %>
+                  <% if compra.estado == "cancelado" %>
+                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Cancelado</span>
+                  <% elsif compra.pago&.estado %>
                     <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Pagado</span>
                   <% else %>
                     <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Pendiente</span>

@@ -16,4 +16,15 @@ class AdminTest < ActiveSupport::TestCase
     admin2 = Admin.new(email: "boss@flowarena.com", password: "password456")
     assert_not admin2.save, "Permitió registrar un correo de admin ya existente"
   end
+
+  test "no debería guardar un admin con contraseña menor a 6 caracteres" do
+    admin = Admin.new(email: "nuevo@flowarena.com", password: "123")
+    assert_not admin.valid?
+    assert admin.errors[:password].present?
+  end
+
+  test "debería guardar un admin con todos los campos válidos" do
+    admin = Admin.new(email: "valido@flowarena.com", password: "password123")
+    assert admin.valid?, "El admin debería ser válido: #{admin.errors.full_messages}"
+  end
 end

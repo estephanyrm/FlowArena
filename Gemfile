@@ -1,6 +1,5 @@
-# ============================================
 # Define las dependencias Ruby del proyecto
-# ============================================
+
 source "https://rubygems.org"
 
 gem "bootsnap", require: false
@@ -22,6 +21,8 @@ gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 gem "rails", "~> 8.1.2"
 gem "rails-i18n"
+gem "rqrcode"
+gem "simplecov", require: false
 gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
@@ -37,6 +38,9 @@ gem "wkhtmltopdf-binary" # Binario necesario para la conversión
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
+
+  gem "capybara"
+  gem "selenium-webdriver", ">= 4.27"
 
   gem "brakeman", require: false
 

@@ -1,0 +1,437 @@
+{
+  "root_group": {
+    "name": "",
+    "path": "",
+    "id": "d41d8cd98f00b204e9800998ecf8427e",
+    "groups": [
+      {
+        "groups": [],
+        "checks": [
+            {
+              "name": "página de compra carga (200)",
+              "path": "::Paso 1 — Seleccionar zona (RF-04)::página de compra carga (200)",
+              "id": "251fa39f6521232000460f0fbe0d96a9",
+              "passes": 316,
+              "fails": 0
+            },
+            {
+              "path": "::Paso 1 — Seleccionar zona (RF-04)::muestra zonas disponibles",
+              "id": "8138250b1b05e81747967e58864e416c",
+              "passes": 316,
+              "fails": 0,
+              "name": "muestra zonas disponibles"
+            }
+          ],
+        "name": "Paso 1 — Seleccionar zona (RF-04)",
+        "path": "::Paso 1 — Seleccionar zona (RF-04)",
+        "id": "737133d794853bc25e93758cc242d463"
+      },
+      {
+        "groups": [],
+        "checks": [
+            {
+              "fails": 0,
+              "name": "compra creada → 302 a /pago",
+              "path": "::Paso 2 — Crear compra invitado (RF-06)::compra creada → 302 a /pago",
+              "id": "72a3d52bbb98f5bddbda8d133cab5708",
+              "passes": 316
+            },
+            {
+              "fails": 0,
+              "name": "RF-06 sin login requerido",
+              "path": "::Paso 2 — Crear compra invitado (RF-06)::RF-06 sin login requerido",
+              "id": "583f8110a835c0cea2a6133355d58f3e",
+              "passes": 316
+            },
+            {
+              "id": "45883df20ca3bd5f50fa844361e58edd",
+              "passes": 316,
+              "fails": 0,
+              "name": "sin error 422 (CSRF/params)",
+              "path": "::Paso 2 — Crear compra invitado (RF-06)::sin error 422 (CSRF/params)"
+            }
+          ],
+        "name": "Paso 2 — Crear compra invitado (RF-06)",
+        "path": "::Paso 2 — Crear compra invitado (RF-06)",
+        "id": "165db30af5fd613f39adb31d4b99ee26"
+      },
+      {
+        "name": "Paso 3 — Página de pago (RF-12)",
+        "path": "::Paso 3 — Página de pago (RF-12)",
+        "id": "329e9485d38cf69441d2548769d26991",
+        "groups": [],
+        "checks": [
+            {
+              "name": "página de pago carga (200)",
+              "path": "::Paso 3 — Página de pago (RF-12)::página de pago carga (200)",
+              "id": "c2329fd8267d8a176fb7d7000236f1a2",
+              "passes": 316,
+              "fails": 0
+            },
+            {
+              "fails": 0,
+              "name": "muestra métodos de pago",
+              "path": "::Paso 3 — Página de pago (RF-12)::muestra métodos de pago",
+              "id": "7650db5ecc0557b41e6038d777dc7979",
+              "passes": 316
+            }
+          ]
+      },
+      {
+        "name": "Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)",
+        "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)",
+        "id": "c804161a5e33899e192290c43ced03df",
+        "groups": [],
+        "checks": [
+            {
+              "name": "RF-12 pago confirmado (200)",
+              "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)::RF-12 pago confirmado (200)",
+              "id": "ee0a3a173427327244faa008a87fb114",
+              "passes": 316,
+              "fails": 0
+            },
+            {
+              "fails": 0,
+              "name": "RF-12 mensaje de éxito visible",
+              "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)::RF-12 mensaje de éxito visible",
+              "id": "4bf1e5bb1434d90b8494dc757c2c7b8f",
+              "passes": 316
+            },
+            {
+              "name": "RF-07 nombre del evento en boleto",
+              "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)::RF-07 nombre del evento en boleto",
+              "id": "9fcc087d6b166e1c246bb194d134c34d",
+              "passes": 316,
+              "fails": 0
+            },
+            {
+              "fails": 0,
+              "name": "RF-07 número de orden presente",
+              "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)::RF-07 número de orden presente",
+              "id": "34b750491c66a35de4a2604859383882",
+              "passes": 316
+            },
+            {
+              "name": "RF-07 datos de zona presentes",
+              "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)::RF-07 datos de zona presentes",
+              "id": "e92fe999ac2b796c594771da2cb33d71",
+              "passes": 316,
+              "fails": 0
+            },
+            {
+              "name": "RF-08 QR presente en boleto",
+              "path": "::Paso 4 — Confirmar pago y boleto digital (RF-07, RF-08, RF-12)::RF-08 QR presente en boleto",
+              "id": "806f7e98d5ab6ffa847bed04ac70d4e2",
+              "passes": 316,
+              "fails": 0
+            }
+          ]
+      }
+    ],
+    "checks": []
+  },
+  "options": {
+    "summaryTrendStats": [
+      "avg",
+      "min",
+      "med",
+      "max",
+      "p(90)",
+      "p(95)"
+    ],
+    "summaryTimeUnit": "",
+    "noColor": false
+  },
+  "state": {
+    "isStdOutTTY": true,
+    "isStdErrTTY": true,
+    "testRunDurationMs": 145817.396992
+  },
+  "metrics": {
+    "errores_http": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "rate": 0,
+        "count": 0
+      },
+      "thresholds": {
+        "count==0": {
+          "ok": true
+        }
+      }
+    },
+    "http_req_blocked": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "med": 0.010209,
+        "max": 7.846115,
+        "p(90)": 0.015057,
+        "p(95)": 0.018853,
+        "avg": 0.025531025300442788,
+        "min": 0.003222
+      }
+    },
+    "checks": {
+      "contains": "default",
+      "values": {
+        "rate": 1,
+        "passes": 4108,
+        "fails": 0
+      },
+      "type": "rate"
+    },
+    "tasa_datos_boleto_completos": {
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "rate": 1,
+        "passes": 316,
+        "fails": 0
+      },
+      "thresholds": {
+        "rate>0.9": {
+          "ok": true
+        }
+      }
+    },
+    "iterations": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 316,
+        "rate": 2.1670939580504016
+      }
+    },
+    "http_req_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "max": 5963.8701,
+        "p(90)": 318.731457,
+        "p(95)": 358.1735,
+        "avg": 178.30051429285254,
+        "min": 0.290122,
+        "med": 166.969686
+      }
+    },
+    "http_req_receiving": {
+      "contains": "time",
+      "values": {
+        "avg": 0.28022496331435787,
+        "min": 0.103724,
+        "med": 0.24793,
+        "max": 3.087626,
+        "p(90)": 0.38778,
+        "p(95)": 0.448223
+      },
+      "type": "trend"
+    },
+    "http_req_sending": {
+      "values": {
+        "p(95)": 0.155059,
+        "avg": 0.08419510942441488,
+        "min": 0.014666,
+        "med": 0.088557,
+        "max": 2.192751,
+        "p(90)": 0.1283
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "http_req_tls_handshaking": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "med": 0,
+        "max": 0,
+        "p(90)": 0,
+        "p(95)": 0,
+        "avg": 0,
+        "min": 0
+      }
+    },
+    "http_req_waiting": {
+      "values": {
+        "min": 0,
+        "med": 166.516303,
+        "max": 5963.527846,
+        "p(90)": 318.518464,
+        "p(95)": 357.838356,
+        "avg": 177.93609422011406
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "group_duration": {
+      "values": {
+        "avg": 221.57288330933525,
+        "min": 30.008576,
+        "med": 191.2889985,
+        "max": 850.34192,
+        "p(90)": 443.30727690000015,
+        "p(95)": 553.4016626499998
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "data_sent": {
+      "contains": "data",
+      "values": {
+        "count": 1080005,
+        "rate": 7406.557943557671
+      },
+      "type": "counter"
+    },
+    "iteration_duration": {
+      "values": {
+        "max": 3863.407256,
+        "p(90)": 3569.222164,
+        "p(95)": 3621.1523942500003,
+        "avg": 3189.822211291141,
+        "min": 2564.773675,
+        "med": 3281.5736095
+      },
+      "type": "trend",
+      "contains": "time"
+    },
+    "http_req_connecting": {
+      "contains": "time",
+      "values": {
+        "avg": 0.008442746995572422,
+        "min": 0,
+        "med": 0,
+        "max": 2.124838,
+        "p(90)": 0,
+        "p(95)": 0
+      },
+      "type": "trend"
+    },
+    "http_req_failed": {
+      "values": {
+        "rate": 0,
+        "passes": 0,
+        "fails": 1581
+      },
+      "type": "rate",
+      "contains": "default"
+    },
+    "vus_max": {
+      "contains": "default",
+      "values": {
+        "value": 10,
+        "min": 10,
+        "max": 10
+      },
+      "type": "gauge"
+    },
+    "tasa_flujo_completado": {
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "passes": 316,
+        "fails": 0,
+        "rate": 1
+      },
+      "thresholds": {
+        "rate>0.8": {
+          "ok": true
+        }
+      }
+    },
+    "http_reqs": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 1581,
+        "rate": 10.842327682524319
+      }
+    },
+    "vus": {
+      "values": {
+        "value": 0,
+        "min": 0,
+        "max": 10
+      },
+      "type": "gauge",
+      "contains": "default"
+    },
+    "tasa_qr_presente": {
+      "thresholds": {
+        "rate>0.9": {
+          "ok": true
+        }
+      },
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "fails": 0,
+        "rate": 1,
+        "passes": 316
+      }
+    },
+    "http_req_duration{expected_response:true}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "min": 0.290122,
+        "med": 166.969686,
+        "max": 5963.8701,
+        "p(90)": 318.731457,
+        "p(95)": 358.1735,
+        "avg": 178.30051429285254
+      }
+    },
+    "tiempo_flujo_completo": {
+      "values": {
+        "avg": 2181.3196202531644,
+        "min": 1563,
+        "med": 2267.5,
+        "max": 2863,
+        "p(90)": 2569,
+        "p(95)": 2620.75
+      },
+      "thresholds": {
+        "p(95)<10000": {
+          "ok": true
+        }
+      },
+      "type": "trend",
+      "contains": "default"
+    },
+    "boletos_emitidos": {
+      "contains": "default",
+      "values": {
+        "rate": 2.1670939580504016,
+        "count": 316
+      },
+      "type": "counter"
+    },
+    "data_received": {
+      "type": "counter",
+      "contains": "data",
+      "values": {
+        "count": 36347787,
+        "rate": 249269.20758292067
+      }
+    },
+    "tiempo_confirmar_pago": {
+      "type": "trend",
+      "contains": "default",
+      "values": {
+        "avg": 373.4145569620253,
+        "min": 140,
+        "med": 357,
+        "max": 848,
+        "p(90)": 608.5,
+        "p(95)": 662
+      },
+      "thresholds": {
+        "p(95)<3000": {
+          "ok": true
+        }
+      }
+    }
+  }
+}

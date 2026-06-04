@@ -104,3 +104,6 @@ yarn-debug.log*
 /public/uploads
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# .env (nunca lo subas al repo)
+LOAD_TEST_TOKEN=mi-token-secreto-local

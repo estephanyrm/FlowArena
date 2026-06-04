@@ -5,6 +5,10 @@ Rails.application.routes.draw do
   devise_for :admins, skip: [ :registrations ]
   devise_for :users
   root "home#index"
+  # Solo disponible en development y test
+  if Rails.env.development? || Rails.env.test?
+    delete "load_test/cleanup", to: "load_test#cleanup"
+  end
 
   # Política de privacidad / Habeas Data
   get "politica-de-privacidad", to: "home#politica_privacidad", as: "politica_privacidad"
@@ -21,9 +25,14 @@ Rails.application.routes.draw do
     member do
       get  :pago
       post :confirmar_pago
+      patch :cancelar
     end
   end
   get "mis_compras", to: "compras#index", as: "mis_compras"
+
+  # Validación de boletos por QR — accesible para el personal del recinto
+  get "validar/:token", to: "validacion#show", as: "validar_boleto"
+  post "validar/:token", to: "validacion#confirmar", as: "confirmar_validacion"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -36,7 +45,7 @@ Rails.application.routes.draw do
     resources :eventos do
       resources :zonas
     end
-    resources :usuarios
+     resources :usuarios, only: [:index, :new, :create, :show]
     resources :reportes, only: [ :index ] do
       collection { get :export }
     end

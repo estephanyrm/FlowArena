@@ -24,3 +24,10 @@ es:
     registrations:
       updated: "Tu cuenta se ha actualizado correctamente."
       destroyed: "¡Adiós! Tu cuenta ha sido cancelada. Esperamos volverte a ver pronto."
+    sessions:
+        signed_in: "Sesión iniciada correctamente."
+        signed_out: "Sesión cerrada correctamente."
+    registrations:
+      signed_up: "Bienvenido/a. Tu cuenta fue creada correctamente."
+      updated: "Tu cuenta se ha actualizado correctamente."
+      destroyed: "¡Adiós! Tu cuenta ha sido cancelada."

@@ -1,9 +1,9 @@
 <% if resource && resource.errors.any? %>
-<script>
-  Swal.fire({
-    icon: 'error',
-    title: 'Error',
-    html: "<%= resource.errors.full_messages.join('<br>') %>"
-  });
-</script>
+  <div id="error-explanation" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+    <ul class="list-disc list-inside text-sm text-red-700">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>

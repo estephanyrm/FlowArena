@@ -4,7 +4,7 @@ class Admin::ReportesController < Admin::BaseController
     @compras = Compra.includes(:boletos, :pago, :user, zonas: :evento)
                      .where(estado: "completado")
 
-    # ── Filtro por fechas ──────────────────────────────────────────────────
+    # ── Filtro por fechas ───────
     if params[:fecha_inicio].present?
       @compras = @compras.where("compras.created_at >= ?", params[:fecha_inicio].to_date.beginning_of_day)
     end
@@ -13,7 +13,7 @@ class Admin::ReportesController < Admin::BaseController
       @compras = @compras.where("compras.created_at <= ?", params[:fecha_fin].to_date.end_of_day)
     end
 
-    # ── Filtro por evento ──────────────────────────────────────────────────
+    # ── Filtro por evento (incluye eventos eliminados con soft-delete) ─────
     if params[:evento_id].present?
       @compras = @compras.joins(boletos: :zona).where(zonas: { evento_id: params[:evento_id] }).distinct
     end
@@ -25,17 +25,17 @@ class Admin::ReportesController < Admin::BaseController
     @total_compras  = ids_limpios.size
 
     # ── Tabla agrupada por evento ──────────────────────────────────────────
+    # Incluimos Evento.unscoped para que los eventos con soft-delete
+    # (deleted_at no nulo) también aparezcan en el reporte histórico.
     if params[:fecha_inicio].present? || params[:fecha_fin].present? || params[:evento_id].present?
-      eventos = Evento.includes(zonas: :boletos)
+      eventos = Evento.unscoped.includes(zonas: :boletos)
       eventos = eventos.where(id: params[:evento_id]) if params[:evento_id].present?
 
       @reporte_eventos = eventos.map do |evento|
-        # IDs de compras completadas para este evento (sin duplicados)
         compra_ids = Compra.where(estado: "completado")
                           .joins(boletos: :zona)
                           .where(zonas: { evento_id: evento.id })
 
-        # Aplicar filtros de fecha si existen
         if params[:fecha_inicio].present?
           compra_ids = compra_ids.where("compras.created_at >= ?", params[:fecha_inicio].to_date.beginning_of_day)
         end
@@ -52,6 +52,7 @@ class Admin::ReportesController < Admin::BaseController
 
         {
           nombre:    evento.nombre,
+          eliminado: evento.eliminado?,   # para marcar visualmente en la vista
           vendidos:  vendidos,
           capacidad: capacidad,
           ingresos:  ingresos
@@ -67,7 +68,6 @@ class Admin::ReportesController < Admin::BaseController
                      .where(estado: "completado")
                      .order(created_at: :desc)
 
-    # Respetar filtros si vienen de la vista de reportes
     if params[:fecha_inicio].present?
       @compras = @compras.where("compras.created_at >= ?", params[:fecha_inicio].to_date.beginning_of_day)
     end
@@ -79,7 +79,7 @@ class Admin::ReportesController < Admin::BaseController
     end
 
     respond_to do |format|
-      format.html  # Previsualización en pantalla
+      format.html
       format.xlsx do
         response.headers["Content-Disposition"] =
           "attachment; filename=\"reporte_flowarena_#{Time.now.strftime('%Y%m%d_%H%M')}.xlsx\""

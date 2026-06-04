@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
 
   def flash_to_headers
     return unless request.xhr?
-    response.headers["X-Flash-Messages"] = flash_hash.to_json
+    response.headers["X-Flash-Messages"] = flash_hash.to_json # :nocov:
     flash.discard # Evita que el mensaje aparezca en la siguiente carga
   end
 

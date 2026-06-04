@@ -54,7 +54,7 @@ class CompraTest < ActiveSupport::TestCase
     assert compra.errors[:precio_total].present?
   end
 
-  # ── Compras de invitado (RF-06) ───────────────────────────────────────────
+  # Compras de invitado (RF-06) 
 
   test "debería permitir compra de invitado con email válido (RF-06)" do
     compra = Compra.new(
@@ -120,4 +120,45 @@ class CompraTest < ActiveSupport::TestCase
     compra.update!(estado: "completado")
     assert_equal "completado", compra.reload.estado
   end
+
+  test "debería poder actualizar estado a cancelado" do
+    compra = @user.compras.create!(
+      cantidad: 1, numero_orden: "ORD-CAN-01",
+      precio_total: 8000, estado: "pendiente"
+    )
+    compra.update!(estado: "cancelado")
+    assert_equal "cancelado", compra.reload.estado
+  end
+ 
+  test "al cancelar compra sus boletos también pueden marcarse cancelados" do
+    compra = @user.compras.create!(
+      cantidad: 2, numero_orden: "ORD-CAN-02",
+      precio_total: 16000, estado: "pendiente"
+    )
+    2.times { compra.boletos.create!(zona: @zona, token_qr: SecureRandom.uuid, estado: "pendiente") }
+ 
+    compra.update!(estado: "cancelado")
+    compra.boletos.update_all(estado: "cancelado")
+ 
+    assert compra.boletos.reload.all? { |b| b.estado == "cancelado" }
+  end
+
+  test "debería permitir compra de usuario registrado sin email explícito" do
+    compra = @user.compras.new(
+      cantidad: 1, numero_orden: "ORD-REG-01",
+      precio_total: 8000, estado: "pendiente"
+    )
+    assert compra.valid?, "Usuario registrado no debería requerir email: #{compra.errors.full_messages}"
+  end
+ 
+  test "debería aceptar email válido en compra de usuario registrado" do
+    compra = @user.compras.new(
+      cantidad: 1, numero_orden: "ORD-REG-02",
+      precio_total: 8000, estado: "pendiente",
+      email: "adicional@test.com"
+    )
+    assert compra.valid?
+  end
+
+  
 end

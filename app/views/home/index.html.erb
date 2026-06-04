@@ -6,7 +6,8 @@
       <% @carousel_events.each_with_index do |event, index| %>
         <div class="<%= index == 0 ? 'block' : 'hidden' %> h-full w-full duration-700 ease-in-out" data-carousel-item>
           <%= link_to pagina_eventos_path(id: event.id), class: "block w-full h-full relative" do %>
-            <%= image_tag event.imagen, class: "absolute block w-full h-full object-contain" %>
+            <%= evento_imagen_tag(event.imagen, class: "w-full h-full object-cover",
+              alt: event.nombre) %>
             <div class="absolute bottom-0 p-8 bg-gradient-to-t from-black/95 via-black/40 to-transparent w-full text-white"></div>
           <% end %>
         </div>
@@ -60,7 +61,7 @@
               <% end %>
 
               <div class="relative w-full aspect-video bg-gray-900 flex items-center justify-center overflow-hidden">
-                <%= image_tag event.imagen, class: "max-w-full max-h-full object-contain transition-transform duration-500 #{agotado ? 'grayscale' : 'group-hover:scale-105'}" %>
+                <%= evento_imagen_tag(event.imagen, class: "max-w-full max-h-full object-contain transition-transform duration-500 #{agotado ? 'grayscale' : 'group-hover:scale-105'}", alt: event.nombre) %>
               </div>
 
               <div class="p-5 flex flex-col flex-grow">

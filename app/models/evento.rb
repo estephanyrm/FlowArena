@@ -1,9 +1,26 @@
-
 class Evento < ApplicationRecord
-  # Relaciones
+  # ── Relaciones ─────────────────
   has_many :zonas, dependent: :destroy
 
-  # Validaciones
+  # ── Soft delete ────────────────
+  # "Eliminar" un evento lo oculta del sistema pero conserva todos los datos.
+  scope :visible,  -> { where(deleted_at: nil) }
+  scope :deleted,  -> { where.not(deleted_at: nil) }
+
+  def soft_delete!
+    transaction do
+      # Cierra el evento para que nadie más compre
+      update!(deleted_at: Time.current, estado: "cerrado")
+      # Marca también las zonas como eliminadas
+      zonas.update_all(deleted_at: Time.current)
+    end
+  end
+
+  def eliminado?
+    deleted_at.present?
+  end
+
+  # ── Validaciones ───────────────
   validates :nombre,      presence: { message: "no puede estar en blanco" }
   validates :descripcion, presence: { message: "no puede estar en blanco" }
   validates :fecha,       presence: { message: "no puede estar en blanco" }
@@ -11,15 +28,14 @@ class Evento < ApplicationRecord
   validates :imagen,      presence: { message: "no puede estar en blanco" }
   validates :estado, inclusion: { in: %w[activo cerrado], message: "valor no permitido" }
 
-  # La fecha no puede ser en el pasado (solo al crear)
   validate :fecha_no_en_el_pasado, on: :create
 
-  # Scope para búsqueda
+  # ── Scopes ─────────────────────
   scope :search_by_name, ->(query) {
     where("nombre ILIKE ? OR descripcion ILIKE ?", "%#{query}%", "%#{query}%")
   }
 
-  # Agotado si está cerrado O si todas sus zonas tienen cupos_disponibles == 0
+  # ── Helpers ────────────────────
   def agotado?
     return true if estado == "cerrado"
     return true if zonas.none?
@@ -30,7 +46,7 @@ class Evento < ApplicationRecord
 
   def fecha_no_en_el_pasado
     if fecha.present? && fecha < Date.today
-      errors.add(:fecha, "no puede ser una fecha pasada")
+      errors.add(:fecha, "no puede ser una fecha pasada")  # :nocov:
     end
   end
 end

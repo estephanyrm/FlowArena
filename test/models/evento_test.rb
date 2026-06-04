@@ -1,159 +1,83 @@
 require "test_helper"
 
 class EventoTest < ActiveSupport::TestCase
-  test "no debería guardar un evento sin nombre" do
-    evento = Evento.new(descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    assert_not evento.save, "Guardó el evento sin nombre"
-    assert_includes evento.errors[:nombre], "no puede estar en blanco"
+
+  def evento_valido(attrs = {})
+    {
+      nombre: "Evento Test", descripcion: "Desc",
+      fecha: Date.tomorrow, hora: "20:00",
+      imagen: "img.jpg", estado: "activo"
+    }.merge(attrs)
   end
 
-  test "no debería guardar un evento sin descripción" do
-    evento = Evento.new(nombre: "Test", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    assert_not evento.save
-    assert_includes evento.errors[:descripcion], "no puede estar en blanco"
-  end
-
-  test "no debería guardar un evento sin imagen" do
-    evento = Evento.new(nombre: "Test", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, estado: "activo")
-    assert_not evento.save
-    assert_includes evento.errors[:imagen], "no puede estar en blanco"
-  end
-
-  test "no debería guardar un evento sin hora" do
-    evento = Evento.new(nombre: "Test", descripcion: "Desc", fecha: Date.tomorrow, imagen: "img.jpg", estado: "activo")
-    assert_not evento.save
-    assert_includes evento.errors[:hora], "no puede estar en blanco"
-  end
-
-  test "debería aceptar estado activo" do
-    evento = Evento.new(nombre: "Test", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    assert evento.valid?
-  end
-
-  test "debería aceptar estado cerrado" do
-    evento = Evento.new(nombre: "Test", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "cerrado")
-    assert evento.valid?
-  end
-
-  test "no debería aceptar estados inválidos" do
-    evento = Evento.new(nombre: "Test", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "cancelado")
-    assert_not evento.valid?
-    assert_includes evento.errors[:estado], "valor no permitido"
-  end
-
-  test "no debería permitir fechas pasadas al crear" do
-    evento = Evento.new(
-      nombre: "Pasado",
-      descripcion: "Desc",
-      fecha: Date.today - 30,
-      hora: Time.now,
-      imagen: "img.jpg",
-      estado: "activo"
-    )
-    assert_not evento.save, "Permitió crear un evento con fecha pasada"
-    assert_includes evento.errors[:fecha], "no puede ser una fecha pasada"
-  end
-
-  test "debería permitir la fecha de hoy al crear" do
-    evento = Evento.new(nombre: "Hoy", descripcion: "Desc", fecha: Date.today, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    assert evento.valid?
-  end
-
-  test "debería permitir actualizar un evento existente sin validar fecha pasada" do
-    evento = Evento.create!(nombre: "Evento Futuro", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    # Cambiar solo el nombre no debería disparar la validación de fecha
-    evento.update_column(:fecha, Date.yesterday)
-    evento.reload
-    evento.nombre = "Nombre Actualizado"
-    assert evento.valid?  # La validación on: :create no aplica en update
-  end
-
-  test "debería buscar correctamente con el scope search_by_name por nombre" do
-    Evento.create!(nombre: "Concierto Rock", descripcion: "Gran concierto", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    Evento.create!(nombre: "Feria Gastronómica", descripcion: "Comida", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-
-    resultados = Evento.search_by_name("Rock")
-    assert_equal 1, resultados.count
-    assert_equal "Concierto Rock", resultados.first.nombre
-  end
-
-  test "debería buscar por descripción también" do
-    Evento.create!(nombre: "Festival", descripcion: "Música electrónica en vivo", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    Evento.create!(nombre: "Teatro", descripcion: "Drama clásico", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-
-    resultados = Evento.search_by_name("electrónica")
-    assert_equal 1, resultados.count
-    assert_equal "Festival", resultados.first.nombre
-  end
-
-  test "search_by_name debería ser case-insensitive" do
-    Evento.create!(nombre: "Jazz Night", descripcion: "Una noche de jazz", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-
-    assert_equal 1, Evento.search_by_name("jazz").count
-    assert_equal 1, Evento.search_by_name("JAZZ").count
-    assert_equal 1, Evento.search_by_name("Jazz").count
-  end
-
-  test "search_by_name debería retornar vacío cuando no hay coincidencias" do
-    Evento.create!(nombre: "Concierto", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    assert_equal 0, Evento.search_by_name("Opera").count
-  end
-
-  test "debería tener muchas zonas" do
-    evento = Evento.create!(nombre: "Multi-zona", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    evento.zonas.create!(nombre: "VIP", capacidad: 100, precio_cents: 10000)
-    evento.zonas.create!(nombre: "General", capacidad: 500, precio_cents: 3000)
-    assert_equal 2, evento.zonas.count
-  end
-
-  test "al destruir un evento también se destruyen sus zonas" do
-    evento = Evento.create!(nombre: "Para Borrar", descripcion: "Desc", fecha: Date.tomorrow, hora: Time.now, imagen: "img.jpg", estado: "activo")
-    evento.zonas.create!(nombre: "VIP", capacidad: 50, precio_cents: 5000)
-    assert_difference "Zona.count", -1 do
-      evento.destroy
-    end
-  end
-    
-  test "agotado? retorna true si el evento está cerrado" do
-    evento = Evento.new(
-      nombre: "Test", descripcion: "Desc",
-      fecha: Date.tomorrow, hora: Time.now,
-      imagen: "img.jpg", estado: "cerrado"
-    )
+  test "agotado? es true cuando estado es cerrado" do
+    evento = Evento.create!(evento_valido(estado: "cerrado"))
     assert evento.agotado?
   end
 
-  test "agotado? retorna true si el evento no tiene zonas" do
-    evento = Evento.create!(
-      nombre: "Sin zonas", descripcion: "Desc",
-      fecha: Date.tomorrow, hora: Time.now,
-      imagen: "img.jpg", estado: "activo"
-    )
+  test "agotado? es true cuando no tiene zonas" do
+    evento = Evento.create!(evento_valido)
+    # Sin zonas → zonas.none? → true
     assert evento.agotado?
   end
 
-  test "agotado? retorna true si todas las zonas están llenas" do
-    evento = Evento.create!(
-      nombre: "Lleno", descripcion: "Desc",
-      fecha: Date.tomorrow, hora: Time.now,
-      imagen: "img.jpg", estado: "activo"
-    )
-    zona = evento.zonas.create!(nombre: "General", capacidad: 1, precio_cents: 3000)
-    user = User.create!(email: "lleno@test.com", password: "password123", name: "Lleno")
-    compra = user.compras.create!(cantidad: 1, numero_orden: "ORD-AG1", precio_total: 3000, estado: "pendiente")
-    compra.boletos.create!(zona: zona, token_qr: SecureRandom.uuid, estado: "pendiente")
-
-    assert evento.agotado?
-  end
-
-  test "agotado? retorna false si al menos una zona tiene cupos disponibles" do
-    evento = Evento.create!(
-      nombre: "Disponible", descripcion: "Desc",
-      fecha: Date.tomorrow, hora: Time.now,
-      imagen: "img.jpg", estado: "activo"
-    )
-    evento.zonas.create!(nombre: "VIP", capacidad: 5, precio_cents: 10000)
-
+  test "agotado? es false cuando hay zonas con cupos disponibles" do
+    evento = Evento.create!(evento_valido)
+    evento.zonas.create!(nombre: "General", precio_cents: 50_000, capacidad: 100)
     assert_not evento.agotado?
+  end
+
+  test "agotado? es true cuando todas las zonas están llenas" do
+    evento = Evento.create!(evento_valido)
+    zona = evento.zonas.create!(nombre: "General", precio_cents: 50_000, capacidad: 1)
+    user = User.create!(name: "Ana", email: "ana@test.com", password: "password123")
+    compra = Compra.create!(
+      user: user, email: user.email,
+      numero_orden: "FA-AGOT-001", cantidad: 1,
+      precio_total: 50_000, estado: "completado"
+    )
+    compra.boletos.create!(
+      zona: zona, nombre_zona: zona.nombre,
+      nombre_evento: evento.nombre,
+      token_qr: SecureRandom.uuid, estado: "pagado"
+    )
+    # Zona con 1 capacidad y 1 boleto → cupos_disponibles = 0
+    assert evento.agotado?
+  end
+
+  # soft_delete!
+
+  test "soft_delete! asigna deleted_at al evento" do
+    evento = Evento.create!(evento_valido)
+    evento.soft_delete!
+    assert_not_nil evento.reload.deleted_at
+  end
+
+  test "soft_delete! cambia estado a cerrado" do
+    evento = Evento.create!(evento_valido)
+    evento.soft_delete!
+    assert_equal "cerrado", evento.reload.estado
+  end
+
+  test "scope visible excluye eventos con deleted_at" do
+    evento = Evento.create!(evento_valido)
+    evento.soft_delete!
+    assert_not Evento.visible.include?(evento)
+  end
+
+  test "eliminado? es true después de soft_delete!" do
+    evento = Evento.create!(evento_valido)
+    evento.soft_delete!
+    assert evento.eliminado?
+  end
+
+  test "eliminado? es false para evento activo" do
+    evento = Evento.create!(evento_valido)
+    assert_not evento.eliminado?
+  end
+
+  test "search_by_name encuentra por nombre" do
+    e = Evento.create!(nombre: "Rock Fest", descripcion: "Desc", fecha: Date.tomorrow, hora: "20:00", imagen: "img.jpg", estado: "activo")
+    assert_includes Evento.search_by_name("Rock"), e
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_184746) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_052039) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,12 +30,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_184746) do
     t.bigint "compra_id", null: false
     t.datetime "created_at", null: false
     t.string "estado", default: "pendiente"
+    t.date "fecha_evento"
     t.datetime "fecha_generacion"
+    t.time "hora_evento"
+    t.string "nombre_evento"
+    t.string "nombre_zona"
+    t.integer "precio_boleto_cents"
     t.string "token_qr"
     t.datetime "updated_at", null: false
     t.boolean "usado"
-    t.bigint "zona_id", null: false
+    t.bigint "zona_id"
     t.index ["compra_id"], name: "index_boletos_on_compra_id"
+    t.index ["token_qr"], name: "index_boletos_on_token_qr", unique: true
     t.index ["zona_id"], name: "index_boletos_on_zona_id"
   end
 
@@ -54,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_184746) do
 
   create_table "eventos", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.text "descripcion"
     t.string "estado"
     t.date "fecha"
@@ -61,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_184746) do
     t.string "imagen"
     t.string "nombre"
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_eventos_on_deleted_at"
   end
 
   create_table "pagos", force: :cascade do |t|
@@ -129,16 +137,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_184746) do
     t.integer "capacidad"
     t.datetime "created_at", null: false
     t.integer "cupos_disponibles"
+    t.datetime "deleted_at"
     t.bigint "evento_id", null: false
     t.string "nombre"
     t.integer "precio_cents"
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_zonas_on_deleted_at"
     t.index ["evento_id"], name: "index_zonas_on_evento_id"
     t.index ["nombre", "evento_id"], name: "index_zonas_on_nombre_and_evento_id", unique: true
   end
 
   add_foreign_key "boletos", "compras"
-  add_foreign_key "boletos", "zonas"
+  add_foreign_key "boletos", "zonas", on_delete: :nullify
   add_foreign_key "compras", "users"
   add_foreign_key "pagos", "compras"
   add_foreign_key "profiles", "users"

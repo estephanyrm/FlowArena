@@ -33,44 +33,66 @@ class ComprasController < ApplicationController
   end
 
   def create
-    zona = @evento.zonas.find(params[:zona_id])
     cantidad = params[:cantidad].to_i
-
-    # RF-03: Validar cupos antes de procesar
-    if zona.cupos_disponibles < cantidad
-      return redirect_to new_compra_path(evento_id: @evento.id),
-             alert: "Lo sentimos, los cupos para esta zona se agotaron. Selecciona otra zona o cantidad."
-    end
-
-    # RF-06: usuario registrado o invitado con email
     email_comprador = user_signed_in? ? current_user.email : params[:email_invitado]
 
-    @compra = Compra.new(
-      user: current_user,
-      email: email_comprador,
-      numero_orden: generar_numero_orden,
-      cantidad: cantidad,
-      precio_total: zona.precio_cents * cantidad,
-      estado: "pendiente"
-    )
+    ActiveRecord::Base.transaction do
+      # Bloqueo pesimista: solo un proceso a la vez puede leer esta zona
+      zona = @evento.zonas.lock("FOR UPDATE").find(params[:zona_id])
 
-    if @compra.save
+      # RF-03: Validar cupos dentro del bloqueo para evitar sobreventa concurrente
+      if zona.cupos_disponibles < cantidad
+        return redirect_to new_compra_path(evento_id: @evento.id),
+              alert: "Lo sentimos, los cupos para esta zona se agotaron. Selecciona otra zona o cantidad."
+      end
+
+      # RF-06: usuario registrado o invitado con email
+      @compra = Compra.create!(
+        user: current_user,
+        email: email_comprador,
+        numero_orden: generar_numero_orden,
+        cantidad: cantidad,
+        precio_total: zona.precio_cents * cantidad,
+        estado: "pendiente"
+      )
+
       session[:ultimo_email_compra] = email_comprador unless user_signed_in?
+
       cantidad.times do
         @compra.boletos.create!(
           zona: zona,
+          nombre_zona: zona.nombre,           # snapshot — sobrevive si se elimina el evento
+          nombre_evento: zona.evento.nombre,  # snapshot — sobrevive si se elimina el evento
           token_qr: SecureRandom.uuid,
           estado: "pendiente"
         )
       end
-      redirect_to pago_compra_path(@compra), notice: "Selección registrada. Confirma tu pago."
-    else
-      redirect_to new_compra_path(evento_id: @evento.id),
-                  alert: "Error al procesar la compra. Intenta de nuevo."
     end
+
+    redirect_to pago_compra_path(@compra), notice: "Selección registrada. Confirma tu pago."
+
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to new_compra_path(evento_id: @evento.id),
+                alert: "Error al procesar la compra: #{e.message}"
   end
 
-  # GET /compras/:id/pago — RF-12: formulario de pago simulado
+  def cancelar
+    @compra = Compra.find(params[:id])
+
+    unless puede_ver_compra?(@compra)
+      return redirect_to root_path, alert: "No tienes acceso a esta compra."
+    end
+
+    if @compra.estado != "pendiente"
+      return redirect_to mis_compras_path, alert: "Solo se pueden cancelar compras pendientes."
+    end
+
+    @compra.update!(estado: "cancelado")
+    @compra.boletos.update_all(estado: "cancelado")
+
+    redirect_to mis_compras_path, notice: "Compra #{@compra.numero_orden} cancelada correctamente."
+  end
+
   def pago
     @compra = Compra.includes(boletos: :zona).find(params[:id])
     unless puede_ver_compra?(@compra)
@@ -98,7 +120,6 @@ class ComprasController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      # Crear el registro de Pago (antes no se creaba — por eso el panel admin no mostraba nada)
       @compra.create_pago!(
         monto: @compra.precio_total,
         fecha_pago: Time.current,
@@ -106,7 +127,6 @@ class ComprasController < ApplicationController
         referencia: "SIM-#{SecureRandom.hex(6).upcase}"
       )
 
-      # Actualizar estado de la compra y sus boletos a "completado"
       @compra.update!(estado: "completado")
       @compra.boletos.update_all(estado: "pagado")
     end
@@ -145,8 +165,6 @@ class ComprasController < ApplicationController
     }[nombre] || "#6B7280"
   end
 
-  # Valida que los campos requeridos según el método lleguen al servidor
-  # (defensa en backend, complementa la validación del frontend)
   def validar_campos_pago(metodo)
     case metodo
     when "tarjeta"
@@ -163,6 +181,6 @@ class ComprasController < ApplicationController
     else
       return "Método de pago no válido."
     end
-    nil # sin error
+    nil
   end
 end

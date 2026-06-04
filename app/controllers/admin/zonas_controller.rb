@@ -30,10 +30,15 @@ class Admin::ZonasController < Admin::BaseController
     end
   end
 
-  # Elimina una zona del evento
+  # Elimina una zona solo si no tiene boletos vendidos
   def destroy
-    @zona.destroy
-    redirect_to admin_evento_path(@evento), notice: "Zona eliminada correctamente"
+    if @zona.boletos.where(estado: "pagado").exists?
+      redirect_to admin_evento_zonas_path(@evento),
+        alert: "No se puede eliminar la zona '#{@zona.nombre}' porque tiene boletos vendidos."
+    else
+      @zona.destroy
+      redirect_to admin_evento_zonas_path(@evento), notice: "Zona eliminada correctamente."
+    end
   end
 
   # Actualiza una zona del evento

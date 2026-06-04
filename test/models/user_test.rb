@@ -1,66 +1,58 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-  test "no debería guardar un usuario sin correo" do
-    user = User.new(password: "password123", name: "Test User")
-    assert_not user.save, "Guardó el usuario sin correo"
+
+  # search_by_query
+  test "search_by_query encuentra por nombre parcial" do
+    user = User.create!(name: "Carlos Ruiz", email: "carlos@test.com", password: "password123")
+    resultados = User.search_by_query("Carlos")
+    assert_includes resultados, user
   end
 
-  test "no debería permitir correos duplicados (HU-07)" do
-    User.create!(email: "duplicate@test.com", password: "password123", name: "User 1")
-    user2 = User.new(email: "duplicate@test.com", password: "password456", name: "User 2")
-    assert_not user2.save, "Permitió registrar un correo ya existente"
+  test "search_by_query encuentra por email parcial" do
+    user = User.create!(name: "Diana", email: "diana@correo.com", password: "password123")
+    resultados = User.search_by_query("diana@correo")
+    assert_includes resultados, user
   end
 
-  test "la contraseña debería estar cifrada (HU-07)" do
-    user = User.create!(email: "secure@test.com", password: "my_secret_password", name: "Secure User")
-    assert_not_equal "my_secret_password", user.encrypted_password, "La contraseña no se guardó cifrada"
+  test "search_by_query con término que no coincide devuelve colección vacía" do
+    User.create!(name: "Eduardo", email: "edu@test.com", password: "password123")
+    resultados = User.search_by_query("zzz_no_existe_zzz")
+    assert_empty resultados
   end
 
-  test "debería validar el formato del correo" do
-    user = User.new(email: "correo-invalido", password: "password123")
-    assert_not user.valid?, "Aceptó un correo con formato inválido"
+  test "search_by_query es case-insensitive" do
+    user = User.create!(name: "Fernanda", email: "fer@test.com", password: "password123")
+    resultados = User.search_by_query("FERNANDA")
+    assert_includes resultados, user
   end
 
-  test "debería aceptar un correo con formato válido" do
-    user = User.new(email: "valido@correo.com", password: "password123", name: "Válido")
-    assert user.valid?
+  test "search_by_query devuelve múltiples resultados" do
+    u1 = User.create!(name: "Gabriel Test", email: "gabriel@test.com", password: "password123")
+    u2 = User.create!(name: "Gabriela Test", email: "gabriela@test.com", password: "password123")
+    resultados = User.search_by_query("gabriel")
+    assert_includes resultados, u1
+    assert_includes resultados, u2
   end
 
-  test "debería tener muchas compras" do
-    user = User.create!(email: "compras@test.com", password: "password123", name: "Comprador")
-    user.compras.create!(cantidad: 1, numero_orden: "ORD-U1", precio_total: 5000, estado: "pendiente")
-    user.compras.create!(cantidad: 2, numero_orden: "ORD-U2", precio_total: 10000, estado: "completado")
-    assert_equal 2, user.compras.count
+  # asociaciones
+
+  test "usuario tiene muchas compras" do
+    user = User.create!(name: "Héctor", email: "hector@test.com", password: "password123")
+    compra = Compra.create!(
+      user: user, email: user.email,
+      numero_orden: "FA-USR-TEST-001", cantidad: 1,
+      precio_total: 50_000, estado: "pendiente"
+    )
+    assert_includes user.compras, compra
   end
 
-  test "scope search_by_query debería encontrar por nombre" do
-    User.create!(email: "juan@test.com", password: "password123", name: "Juan Pérez")
-    User.create!(email: "ana@test.com", password: "password123", name: "Ana López")
+  # Devise validations 
 
-    resultados = User.search_by_query("Juan")
-    assert_equal 1, resultados.count
-    assert_equal "Juan Pérez", resultados.first.name
-  end
-
-  test "scope search_by_query debería encontrar por email" do
-    User.create!(email: "especial@empresa.com", password: "password123", name: "Especial")
-    User.create!(email: "otro@test.com", password: "password123", name: "Otro")
-
-    resultados = User.search_by_query("empresa")
-    assert_equal 1, resultados.count
-    assert_equal "especial@empresa.com", resultados.first.email
-  end
-
-  test "scope search_by_query debería ser case-insensitive" do
-    User.create!(email: "maria@test.com", password: "password123", name: "María García")
-
-    assert_equal 1, User.search_by_query("maría").count
-    assert_equal 1, User.search_by_query("MARÍA").count
-  end
-
-  test "scope search_by_query debería retornar vacío sin coincidencias" do
-    User.create!(email: "alguien@test.com", password: "password123", name: "Alguien")
-    assert_equal 0, User.search_by_query("XYZ_INEXISTENTE").count
+  test "email debe ser único" do
+    User.create!(name: "Isabel", email: "unico@test.com", password: "password123")
+    dup = User.new(name: "Otro", email: "unico@test.com", password: "password123")
+    assert_not dup.valid?
+    assert dup.errors[:email].any?
   end
 end

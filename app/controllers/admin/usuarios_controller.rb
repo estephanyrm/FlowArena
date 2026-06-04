@@ -21,25 +21,7 @@ class Admin::UsuariosController < Admin::BaseController
 
   def show
     @usuario = User.find(params[:id])
-  end
-
-  def edit
-    @usuario = User.find(params[:id])
-  end
-
-  def update
-    @usuario = User.find(params[:id])
-    if @usuario.update(usuario_params)
-      redirect_to admin_usuarios_path, notice: "Usuario actualizado exitosamente."
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    @usuario = User.find(params[:id])
-    @usuario.destroy
-    redirect_to admin_usuarios_path, alert: "Usuario eliminado."
+    @compras = @usuario.compras  # asegúrate de incluir esto
   end
 
   private

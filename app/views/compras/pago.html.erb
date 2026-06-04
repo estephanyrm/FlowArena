@@ -268,7 +268,7 @@
                   <span class="text-gray-400 text-xs ml-1">× <%= boletos_grupo.count %></span>
                 </div>
                 <span class="text-gray-500">
-                  <%= humanized_money_with_symbol(z.precio * boletos_grupo.count) %> COP
+                  <%= humanized_money_with_symbol((z.precio) * 100) %> COP
                 </span>
               </div>
             <% end %>

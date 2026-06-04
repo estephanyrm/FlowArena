@@ -62,22 +62,27 @@
       <% else %>
         <% compras_array.each do |compra| %>
           <%
-            boleto_r = compra.boletos.first
-            zona_r   = boleto_r&.zona
-            evento_r = zona_r&.evento
+            boleto_r      = compra.boletos.first
+            zona_r        = boleto_r&.zona
+            evento_r      = zona_r&.evento
+            nombre_zona_r   = zona_r&.nombre   || boleto_r&.nombre_zona   || "—"
+            nombre_evento_r = evento_r&.nombre || boleto_r&.nombre_evento || "—"
             comprador_email = compra.user&.email || compra.email || '(invitado)'
-            es_pagado = compra.pago&.estado == true || compra.estado == 'completado'
+            es_pagado   = compra.pago&.estado == true || compra.estado == 'completado'
+            es_cancelado = compra.estado == 'cancelado'
           %>
           <tr>
             <td><strong><%= compra.numero_orden %></strong></td>
             <td><%= comprador_email %></td>
-            <td><%= evento_r&.nombre || '—' %></td>
-            <td><%= zona_r&.nombre  || '—' %></td>
+            <td><%= nombre_evento_r %></td>
+            <td><%= nombre_zona_r %></td>
             <td class="center"><%= compra.cantidad %></td>
             <td class="monto">$<%= ActiveSupport::NumberHelper.number_to_delimited(compra.precio_total.to_i, delimiter: '.') %></td>
             <td><%= compra.created_at.in_time_zone('America/Bogota').strftime("%d/%m/%Y") %></td>
             <td>
-              <% if es_pagado %>
+              <% if es_cancelado %>
+                <span class="badge-pen" style="background:#fee2e2;color:#b91c1c;">Cancelado</span>
+              <% elsif es_pagado %>
                 <span class="badge-ok">Pagado</span>
               <% else %>
                 <span class="badge-pen">Pendiente</span>

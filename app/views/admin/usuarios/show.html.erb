@@ -1,0 +1,7 @@
+<h1><%= @usuario.name %></h1>
+<p><%= @usuario.email %></p>
+
+<h2>Compras</h2>
+<% @usuario.compras.each do |compra| %>
+  <p><%= compra.numero_orden %></p>
+<% end %>

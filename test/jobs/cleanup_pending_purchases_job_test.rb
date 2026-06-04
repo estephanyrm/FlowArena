@@ -1,103 +1,80 @@
 require "test_helper"
 
-class CleanupPendingPurchasesJobTest < ActiveSupport::TestCase
+class CleanupPendingPurchasesJobTest < ActiveJob::TestCase
+
   def setup
-    @user = User.create!(
-      email: "job@test.com",
-      password: "password123",
-      name: "Job Tester"
+    @evento = Evento.create!(
+      nombre: "Festival Job", descripcion: "Desc",
+      fecha: Date.tomorrow, hora: "20:00",
+      imagen: "img.jpg", estado: "activo"
     )
+    @zona = @evento.zonas.create!(nombre: "General", precio_cents: 50_000, capacidad: 100)
   end
 
-  #  Invitados 
-
-  test "elimina compra pendiente antigua de invitado" do
-    compra = Compra.create!(
-      user: nil,
-      email: "invitado@test.com",
-      cantidad: 1,
-      numero_orden: "ORD-INV-VIEJA",
-      precio_total: 5000,
-      estado: "pendiente"
+  test "cancela compras pendientes de invitados creadas hace más de 2 minutos" do
+    compra_vieja = Compra.create!(
+      user: nil, email: "viejo@test.com",
+      numero_orden: "FA-JOB-001", cantidad: 1,
+      precio_total: 50_000, estado: "pendiente"
     )
-    compra.update_column(:created_at, 5.minutes.ago)
+    compra_vieja.update_column(:created_at, 3.minutes.ago)
 
     assert_difference "Compra.count", -1 do
-      CleanupPendingPurchasesJob.new.perform
+      CleanupPendingPurchasesJob.perform_now
     end
   end
 
-  test "no elimina compra pendiente reciente de invitado" do
+  test "no elimina compras pendientes de invitados recientes" do
     Compra.create!(
-      user: nil,
-      email: "invitado@test.com",
-      cantidad: 1,
-      numero_orden: "ORD-INV-RECIENTE",
-      precio_total: 5000,
-      estado: "pendiente"
+      user: nil, email: "reciente@test.com",
+      numero_orden: "FA-JOB-002", cantidad: 1,
+      precio_total: 50_000, estado: "pendiente"
     )
 
     assert_no_difference "Compra.count" do
-      CleanupPendingPurchasesJob.new.perform
+      CleanupPendingPurchasesJob.perform_now
     end
   end
 
-  # Usuarios registrados 
-
-  test "no elimina compra pendiente antigua de usuario registrado" do
-    compra = @user.compras.create!(
-      cantidad: 1,
-      numero_orden: "ORD-USER-VIEJA",
-      precio_total: 5000,
-      estado: "pendiente"
+  test "no elimina compras completadas de invitados antiguas" do
+    compra = Compra.create!(
+      user: nil, email: "comp@test.com",
+      numero_orden: "FA-JOB-003", cantidad: 1,
+      precio_total: 50_000, estado: "completado"
     )
     compra.update_column(:created_at, 10.minutes.ago)
 
     assert_no_difference "Compra.count" do
-      CleanupPendingPurchasesJob.new.perform
+      CleanupPendingPurchasesJob.perform_now
     end
   end
 
-  #  Caso mixto 
-
-  test "elimina solo la compra antigua del invitado en escenario mixto" do
-    # Invitado antiguo — debe eliminarse
-    inv_vieja = Compra.create!(
-      user: nil,
-      email: "inv@test.com",
-      cantidad: 1,
-      numero_orden: "ORD-MIX-INV",
-      precio_total: 5000,
-      estado: "pendiente"
+  test "no elimina compras pendientes de usuarios registrados" do
+    user = User.create!(name: "Reg", email: "reg@test.com", password: "password123")
+    compra = Compra.create!(
+      user: user, email: user.email,
+      numero_orden: "FA-JOB-004", cantidad: 1,
+      precio_total: 50_000, estado: "pendiente"
     )
-    inv_vieja.update_column(:created_at, 10.minutes.ago)
+    compra.update_column(:created_at, 10.minutes.ago)
 
-    # Invitado reciente — debe sobrevivir
-    Compra.create!(
-      user: nil,
-      email: "inv2@test.com",
-      cantidad: 1,
-      numero_orden: "ORD-MIX-INV-REC",
-      precio_total: 5000,
-      estado: "pendiente"
-    )
+    assert_no_difference "Compra.count" do
+      CleanupPendingPurchasesJob.perform_now
+    end
+  end
 
-    # Usuario registrado antiguo — debe sobrevivir
-    compra_user = @user.compras.create!(
-      cantidad: 1,
-      numero_orden: "ORD-MIX-USER",
-      precio_total: 5000,
-      estado: "pendiente"
-    )
-    compra_user.update_column(:created_at, 10.minutes.ago)
-
-    assert_difference "Compra.count", -1 do
-      CleanupPendingPurchasesJob.new.perform
+  test "elimina múltiples compras viejas de invitados en un solo run" do
+    3.times do |i|
+      c = Compra.create!(
+        user: nil, email: "multi#{i}@test.com",
+        numero_orden: "FA-JOB-10#{i}", cantidad: 1,
+        precio_total: 50_000, estado: "pendiente"
+      )
+      c.update_column(:created_at, 5.minutes.ago)
     end
 
-    assert Compra.exists?(numero_orden: "ORD-MIX-INV-REC"),
-           "La compra reciente del invitado no debió eliminarse"
-    assert Compra.exists?(numero_orden: "ORD-MIX-USER"),
-           "La compra del usuario registrado no debió eliminarse"
+    assert_difference "Compra.count", -3 do
+      CleanupPendingPurchasesJob.perform_now
+    end
   end
 end
