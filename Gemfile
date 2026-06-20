@@ -30,7 +30,7 @@ gem "stimulus-rails"
 gem "turbo-rails"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "thruster", require: false
-gem "tailwindcss-rails", "~> 4.4"
+gem "tailwindcss-rails", "~> 4.6"
 # Para generar archivos PDF
 gem "wicked_pdf"
 gem "wkhtmltopdf-binary" # Binario necesario para la conversión
